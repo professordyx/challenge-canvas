@@ -19,6 +19,7 @@ export type Database = {
           created_at: string
           evaluation: Json | null
           id: string
+          infographic_url: string | null
           sections: Json
           status: string
           title: string
@@ -29,6 +30,7 @@ export type Database = {
           created_at?: string
           evaluation?: Json | null
           id?: string
+          infographic_url?: string | null
           sections?: Json
           status?: string
           title: string
@@ -39,6 +41,7 @@ export type Database = {
           created_at?: string
           evaluation?: Json | null
           id?: string
+          infographic_url?: string | null
           sections?: Json
           status?: string
           title?: string
