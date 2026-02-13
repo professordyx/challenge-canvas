@@ -17,6 +17,7 @@ export type Database = {
       challenges: {
         Row: {
           created_at: string
+          evaluation: Json | null
           id: string
           sections: Json
           status: string
@@ -26,6 +27,7 @@ export type Database = {
         }
         Insert: {
           created_at?: string
+          evaluation?: Json | null
           id?: string
           sections?: Json
           status?: string
@@ -35,6 +37,7 @@ export type Database = {
         }
         Update: {
           created_at?: string
+          evaluation?: Json | null
           id?: string
           sections?: Json
           status?: string
