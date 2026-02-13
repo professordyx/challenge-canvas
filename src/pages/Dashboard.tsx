@@ -52,9 +52,9 @@ const Dashboard = () => {
   const statusLabel = (s: ChallengeStatus) =>
     s === "draft" ? t("draft") : s === "in_progress" ? t("inProgress") : t("completed");
 
-  const handleCreate = () => {
+  const handleCreate = async () => {
     if (!newTitle.trim()) return;
-    const c = createChallenge(newTitle.trim());
+    const c = await createChallenge(newTitle.trim());
     setNewTitle("");
     setShowNew(false);
     navigate(`/canvas/${c.id}`);

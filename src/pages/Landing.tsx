@@ -42,13 +42,13 @@ const Landing = () => {
             transition={{ duration: 0.6, delay: 0.3 }}
             className="mt-10 flex flex-col items-center justify-center gap-4 sm:flex-row"
           >
-            <Link to="/dashboard">
+            <Link to="/auth">
               <Button size="lg" className="gap-2 bg-background text-foreground hover:bg-background/90">
                 {t("createAccount")}
                 <ArrowRight className="h-4 w-4" />
               </Button>
             </Link>
-            <Link to="/dashboard">
+            <Link to="/auth">
               <Button size="lg" variant="outline" className="border-primary-foreground/30 text-primary-foreground hover:bg-primary-foreground/10">
                 {t("signIn")}
               </Button>

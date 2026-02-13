@@ -83,6 +83,20 @@ export const translations = {
     selectLanguage: "Selecionar Idioma",
     portuguese: "Português",
     spanish: "Español",
+
+    // Auth
+    signInDesc: "Entre na sua conta para acessar seus desafios",
+    signUpDesc: "Crie sua conta para começar a estruturar desafios",
+    continueWithGoogle: "Continuar com Google",
+    or: "ou",
+    email: "E-mail",
+    password: "Senha",
+    alreadyHaveAccount: "Já tem uma conta?",
+    noAccount: "Não tem uma conta?",
+    authError: "Erro de autenticação",
+    checkEmail: "Verifique seu e-mail",
+    checkEmailDesc: "Enviamos um link de confirmação para seu e-mail.",
+    logout: "Sair",
   },
   es: {
     heroTitle: "Estructure problemas complejos con claridad estratégica",
@@ -158,6 +172,20 @@ export const translations = {
     selectLanguage: "Seleccionar Idioma",
     portuguese: "Português",
     spanish: "Español",
+
+    // Auth
+    signInDesc: "Inicie sesión para acceder a sus desafíos",
+    signUpDesc: "Cree su cuenta para comenzar a estructurar desafíos",
+    continueWithGoogle: "Continuar con Google",
+    or: "o",
+    email: "Correo electrónico",
+    password: "Contraseña",
+    alreadyHaveAccount: "¿Ya tiene una cuenta?",
+    noAccount: "¿No tiene una cuenta?",
+    authError: "Error de autenticación",
+    checkEmail: "Verifique su correo",
+    checkEmailDesc: "Enviamos un enlace de confirmación a su correo.",
+    logout: "Salir",
   },
 } as const;
 
