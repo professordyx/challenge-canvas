@@ -18,10 +18,11 @@ const dbToChallenge = (row: any): Challenge => ({
   id: row.id,
   title: row.title,
   status: row.status as ChallengeStatus,
-  quality_score: null,
+  quality_score: row.evaluation?.score ?? null,
   created_at: row.created_at,
   updated_at: row.updated_at,
   canvas: { ...emptyCanvas, ...(typeof row.sections === 'object' ? row.sections : {}) },
+  evaluation: row.evaluation ?? null,
 });
 
 export const ChallengesProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
@@ -73,6 +74,7 @@ export const ChallengesProvider: React.FC<{ children: React.ReactNode }> = ({ ch
     if (updates.title !== undefined) dbUpdates.title = updates.title;
     if (updates.status !== undefined) dbUpdates.status = updates.status;
     if (updates.canvas !== undefined) dbUpdates.sections = updates.canvas;
+    if (updates.evaluation !== undefined) dbUpdates.evaluation = updates.evaluation;
     if (Object.keys(dbUpdates).length > 0) {
       supabase.from("challenges").update(dbUpdates).eq("id", id).then();
     }

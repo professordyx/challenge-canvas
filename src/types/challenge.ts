@@ -15,6 +15,14 @@ export interface CanvasFields {
   deliverables: string;
 }
 
+export interface Evaluation {
+  score: number;
+  level: string;
+  summary: string;
+  sections: Record<string, { score: number; feedback: string }>;
+  recommendations: string[];
+}
+
 export interface Challenge {
   id: string;
   title: string;
@@ -23,6 +31,7 @@ export interface Challenge {
   created_at: string;
   updated_at: string;
   canvas: CanvasFields;
+  evaluation: Evaluation | null;
 }
 
 export const emptyCanvas: CanvasFields = {
