@@ -11,8 +11,8 @@ serve(async (req) => {
 
   try {
     const { canvas, title, language, challengeId } = await req.json();
-    const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
-    if (!LOVABLE_API_KEY) throw new Error("LOVABLE_API_KEY is not configured");
+    const GEMINI_API_KEY = Deno.env.get("Gemini_API_KEY");
+    if (!GEMINI_API_KEY) throw new Error("Gemini_API_KEY is not configured");
 
     const lang = language === "es" ? "español" : "português brasileiro";
 
@@ -38,18 +38,19 @@ ${canvasText}
 
 Gere a imagem como um infográfico profissional no estilo editorial ilustrado.`;
 
-    const response = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
-      method: "POST",
-      headers: {
-        Authorization: `Bearer ${LOVABLE_API_KEY}`,
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        model: "google/gemini-3-pro-image-preview",
-        messages: [{ role: "user", content: prompt }],
-        modalities: ["image", "text"],
-      }),
-    });
+    const response = await fetch(
+      `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash-exp:generateContent?key=${GEMINI_API_KEY}`,
+      {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          contents: [{ role: "user", parts: [{ text: prompt }] }],
+          generationConfig: {
+            responseModalities: ["TEXT", "IMAGE"],
+          },
+        }),
+      }
+    );
 
     if (!response.ok) {
       const status = response.status;
@@ -58,40 +59,40 @@ Gere a imagem como um infográfico profissional no estilo editorial ilustrado.`;
           status: 429, headers: { ...corsHeaders, "Content-Type": "application/json" },
         });
       }
-      if (status === 402) {
-        return new Response(JSON.stringify({ error: "Payment required." }), {
-          status: 402, headers: { ...corsHeaders, "Content-Type": "application/json" },
-        });
-      }
       const t = await response.text();
-      console.error("AI image error:", status, t);
-      throw new Error("AI gateway error");
+      console.error("Gemini image error:", status, t);
+      throw new Error("Gemini API error");
     }
 
     const data = await response.json();
-    const imageUrl = data.choices?.[0]?.message?.images?.[0]?.image_url?.url;
-
-    if (!imageUrl) {
+    
+    // Find image part in response
+    const parts = data.candidates?.[0]?.content?.parts || [];
+    const imagePart = parts.find((p: any) => p.inlineData);
+    
+    if (!imagePart?.inlineData) {
       throw new Error("No image generated");
     }
+
+    const base64Data = imagePart.inlineData.data;
+    const mimeType = imagePart.inlineData.mimeType || "image/png";
 
     // Store in Supabase Storage
     const supabaseUrl = Deno.env.get("SUPABASE_URL")!;
     const supabaseKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
     const supabase = createClient(supabaseUrl, supabaseKey);
 
-    // Decode base64 and upload
-    const base64Data = imageUrl.replace(/^data:image\/\w+;base64,/, "");
     const binaryData = Uint8Array.from(atob(base64Data), (c) => c.charCodeAt(0));
-    const fileName = `infographics/${challengeId}-${Date.now()}.png`;
+    const ext = mimeType.includes("png") ? "png" : "jpg";
+    const fileName = `infographics/${challengeId}-${Date.now()}.${ext}`;
 
     const { error: uploadError } = await supabase.storage
       .from("canvas-assets")
-      .upload(fileName, binaryData, { contentType: "image/png", upsert: true });
+      .upload(fileName, binaryData, { contentType: mimeType, upsert: true });
 
     if (uploadError) {
       console.error("Upload error:", uploadError);
-      // Return base64 as fallback
+      const imageUrl = `data:${mimeType};base64,${base64Data}`;
       return new Response(JSON.stringify({ imageUrl }), {
         headers: { ...corsHeaders, "Content-Type": "application/json" },
       });
