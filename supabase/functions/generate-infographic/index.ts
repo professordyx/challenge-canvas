@@ -1,5 +1,4 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
-import { createClient } from "npm:@supabase/supabase-js@2.95.3";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -66,7 +65,6 @@ Gere a imagem como um infográfico profissional no estilo editorial ilustrado.`;
 
     const data = await response.json();
     
-    // Find image part in response
     const parts = data.candidates?.[0]?.content?.parts || [];
     const imagePart = parts.find((p: any) => p.inlineData);
     
@@ -77,30 +75,38 @@ Gere a imagem como um infográfico profissional no estilo editorial ilustrado.`;
     const base64Data = imagePart.inlineData.data;
     const mimeType = imagePart.inlineData.mimeType || "image/png";
 
-    // Store in Supabase Storage
+    // Upload to storage using REST API directly (avoids heavy SDK import)
     const supabaseUrl = Deno.env.get("SUPABASE_URL")!;
-    const supabaseKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
-    const supabase = createClient(supabaseUrl, supabaseKey);
+    const serviceRoleKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
 
     const binaryData = Uint8Array.from(atob(base64Data), (c) => c.charCodeAt(0));
     const ext = mimeType.includes("png") ? "png" : "jpg";
     const fileName = `infographics/${challengeId}-${Date.now()}.${ext}`;
 
-    const { error: uploadError } = await supabase.storage
-      .from("canvas-assets")
-      .upload(fileName, binaryData, { contentType: mimeType, upsert: true });
+    const uploadRes = await fetch(
+      `${supabaseUrl}/storage/v1/object/canvas-assets/${fileName}`,
+      {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${serviceRoleKey}`,
+          "Content-Type": mimeType,
+          "x-upsert": "true",
+        },
+        body: binaryData,
+      }
+    );
 
-    if (uploadError) {
-      console.error("Upload error:", uploadError);
+    if (!uploadRes.ok) {
+      console.error("Upload error:", await uploadRes.text());
       const imageUrl = `data:${mimeType};base64,${base64Data}`;
       return new Response(JSON.stringify({ imageUrl }), {
         headers: { ...corsHeaders, "Content-Type": "application/json" },
       });
     }
 
-    const { data: publicUrl } = supabase.storage.from("canvas-assets").getPublicUrl(fileName);
+    const publicUrl = `${supabaseUrl}/storage/v1/object/public/canvas-assets/${fileName}`;
 
-    return new Response(JSON.stringify({ imageUrl: publicUrl.publicUrl }), {
+    return new Response(JSON.stringify({ imageUrl: publicUrl }), {
       headers: { ...corsHeaders, "Content-Type": "application/json" },
     });
   } catch (e) {
