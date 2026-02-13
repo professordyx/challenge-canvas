@@ -97,6 +97,20 @@ export const translations = {
     checkEmail: "Verifique seu e-mail",
     checkEmailDesc: "Enviamos um link de confirmação para seu e-mail.",
     logout: "Sair",
+
+    // AI
+    improving: "Melhorando...",
+    evaluating: "Avaliando...",
+    generateInfographic: "Gerar Infográfico",
+    generatingInfographic: "Gerando infográfico...",
+    infographicReady: "Infográfico gerado!",
+    infographicError: "Erro ao gerar infográfico",
+    aiError: "Erro na IA",
+    evaluationSummary: "Resumo da Avaliação",
+    recommendations: "Recomendações",
+    downloadInfographic: "Baixar Infográfico",
+    evaluateFirst: "Avalie o canvas antes de gerar o infográfico",
+    sectionEmpty: "Preencha esta seção antes de melhorar com IA",
   },
   es: {
     heroTitle: "Estructure problemas complejos con claridad estratégica",
@@ -186,6 +200,20 @@ export const translations = {
     checkEmail: "Verifique su correo",
     checkEmailDesc: "Enviamos un enlace de confirmación a su correo.",
     logout: "Salir",
+
+    // AI
+    improving: "Mejorando...",
+    evaluating: "Evaluando...",
+    generateInfographic: "Generar Infografía",
+    generatingInfographic: "Generando infografía...",
+    infographicReady: "¡Infografía generada!",
+    infographicError: "Error al generar infografía",
+    aiError: "Error de IA",
+    evaluationSummary: "Resumen de Evaluación",
+    recommendations: "Recomendaciones",
+    downloadInfographic: "Descargar Infografía",
+    evaluateFirst: "Evalúe el canvas antes de generar la infografía",
+    sectionEmpty: "Complete esta sección antes de mejorar con IA",
   },
 } as const;
 
