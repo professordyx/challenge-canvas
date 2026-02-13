@@ -204,6 +204,10 @@ const CanvasEditor = () => {
     }
   };
 
+  const handleExportPDF = () => {
+    window.print();
+  };
+
   if (!challenge) return null;
 
   const getLevelColor = (level: string) => {
@@ -249,7 +253,7 @@ const CanvasEditor = () => {
               )}
               {evaluating ? t("evaluating") : t("evaluateCanvas")}
             </Button>
-            <Button variant="outline" size="sm" className="gap-1.5" disabled>
+            <Button variant="outline" size="sm" className="gap-1.5" onClick={handleExportPDF}>
               <FileDown className="h-4 w-4" />
               {t("exportPDF")}
             </Button>
