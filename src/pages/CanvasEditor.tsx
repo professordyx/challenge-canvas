@@ -1,21 +1,28 @@
-import { useEffect, useCallback, useRef } from "react";
+import { useEffect, useCallback, useRef, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import { useLanguage } from "@/i18n/LanguageContext";
 import { useChallenges } from "../hooks/useChallenges";
 import { CanvasFields } from "@/types/challenge";
 import { TranslationKey } from "@/i18n/translations";
+import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
+import { Card, CardContent } from "@/components/ui/card";
+import { Progress } from "@/components/ui/progress";
 import {
   ArrowLeft,
   Sparkles,
   BarChart3,
   FileDown,
   Save,
+  Loader2,
+  ImageIcon,
+  Download,
 } from "lucide-react";
+import { useToast } from "@/hooks/use-toast";
 import Footer from "@/components/layout/Footer";
 
 interface SectionConfig {
@@ -39,13 +46,28 @@ const sections: SectionConfig[] = [
   { key: "deliverables", labelKey: "deliverables", placeholderKey: "deliverablesPlaceholder" },
 ];
 
+interface Evaluation {
+  score: number;
+  level: string;
+  summary: string;
+  sections: Record<string, { score: number; feedback: string }>;
+  recommendations: string[];
+}
+
 const CanvasEditor = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
-  const { t } = useLanguage();
+  const { t, language } = useLanguage();
   const { challenges, updateChallenge } = useChallenges();
   const challenge = challenges.find((c) => c.id === id);
   const autoSaveTimer = useRef<ReturnType<typeof setTimeout>>();
+  const { toast } = useToast();
+
+  const [improvingSection, setImprovingSection] = useState<string | null>(null);
+  const [evaluating, setEvaluating] = useState(false);
+  const [evaluation, setEvaluation] = useState<Evaluation | null>(null);
+  const [generatingInfographic, setGeneratingInfographic] = useState(false);
+  const [infographicUrl, setInfographicUrl] = useState<string | null>(null);
 
   useEffect(() => {
     if (!challenge) navigate("/dashboard", { replace: true });
@@ -55,15 +77,10 @@ const CanvasEditor = () => {
     (field: keyof CanvasFields, value: string) => {
       if (!id || !challenge) return;
       const updatedCanvas = { ...challenge.canvas, [field]: value };
-      // Debounced autosave
       if (autoSaveTimer.current) clearTimeout(autoSaveTimer.current);
       autoSaveTimer.current = setTimeout(() => {
-        updateChallenge(id, {
-          canvas: updatedCanvas,
-          status: "in_progress",
-        });
+        updateChallenge(id, { canvas: updatedCanvas, status: "in_progress" });
       }, 500);
-      // Immediate local update
       updateChallenge(id, { canvas: updatedCanvas });
     },
     [id, challenge, updateChallenge]
@@ -77,7 +94,123 @@ const CanvasEditor = () => {
     [id, updateChallenge]
   );
 
+  const handleImproveSection = async (sectionKey: keyof CanvasFields, sectionLabel: string) => {
+    if (!challenge) return;
+    const currentText = challenge.canvas[sectionKey];
+    if (!currentText.trim()) {
+      toast({ title: t("sectionEmpty"), variant: "destructive" });
+      return;
+    }
+
+    setImprovingSection(sectionKey);
+    try {
+      const resp = await fetch(
+        `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/improve-section`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY}`,
+          },
+          body: JSON.stringify({ sectionKey, sectionLabel, currentText, language }),
+        }
+      );
+
+      if (!resp.ok) {
+        const err = await resp.json().catch(() => ({}));
+        throw new Error(err.error || "AI error");
+      }
+
+      // Stream response
+      const reader = resp.body?.getReader();
+      if (!reader) throw new Error("No reader");
+      const decoder = new TextDecoder();
+      let improved = "";
+      let buffer = "";
+
+      while (true) {
+        const { done, value } = await reader.read();
+        if (done) break;
+        buffer += decoder.decode(value, { stream: true });
+
+        let newlineIndex: number;
+        while ((newlineIndex = buffer.indexOf("\n")) !== -1) {
+          let line = buffer.slice(0, newlineIndex);
+          buffer = buffer.slice(newlineIndex + 1);
+          if (line.endsWith("\r")) line = line.slice(0, -1);
+          if (!line.startsWith("data: ")) continue;
+          const jsonStr = line.slice(6).trim();
+          if (jsonStr === "[DONE]") break;
+          try {
+            const parsed = JSON.parse(jsonStr);
+            const content = parsed.choices?.[0]?.delta?.content;
+            if (content) {
+              improved += content;
+              handleFieldChange(sectionKey, improved);
+            }
+          } catch {}
+        }
+      }
+    } catch (e: any) {
+      toast({ title: t("aiError"), description: e.message, variant: "destructive" });
+    } finally {
+      setImprovingSection(null);
+    }
+  };
+
+  const handleEvaluate = async () => {
+    if (!challenge || !id) return;
+    setEvaluating(true);
+    setEvaluation(null);
+    try {
+      const { data, error } = await supabase.functions.invoke("evaluate-canvas", {
+        body: { canvas: challenge.canvas, title: challenge.title, language },
+      });
+      if (error) throw error;
+      setEvaluation(data);
+      if (data.score !== undefined) {
+        updateChallenge(id, { quality_score: data.score });
+      }
+    } catch (e: any) {
+      toast({ title: t("aiError"), description: e.message, variant: "destructive" });
+    } finally {
+      setEvaluating(false);
+    }
+  };
+
+  const handleGenerateInfographic = async () => {
+    if (!challenge || !id) return;
+    if (!evaluation) {
+      toast({ title: t("evaluateFirst"), variant: "destructive" });
+      return;
+    }
+    setGeneratingInfographic(true);
+    setInfographicUrl(null);
+    try {
+      const { data, error } = await supabase.functions.invoke("generate-infographic", {
+        body: { canvas: challenge.canvas, title: challenge.title, language, challengeId: id },
+      });
+      if (error) throw error;
+      if (data?.imageUrl) {
+        setInfographicUrl(data.imageUrl);
+        toast({ title: t("infographicReady") });
+      } else {
+        throw new Error("No image returned");
+      }
+    } catch (e: any) {
+      toast({ title: t("infographicError"), description: e.message, variant: "destructive" });
+    } finally {
+      setGeneratingInfographic(false);
+    }
+  };
+
   if (!challenge) return null;
+
+  const getLevelColor = (level: string) => {
+    if (level === "estratégico" || level === "estrategico" || level === "strategic") return "text-green-600";
+    if (level === "adequado" || level === "adecuado" || level === "adequate") return "text-yellow-600";
+    return "text-destructive";
+  };
 
   return (
     <div className="flex min-h-[calc(100vh-4rem)] flex-col">
@@ -85,11 +218,7 @@ const CanvasEditor = () => {
         {/* Top Bar */}
         <div className="mb-6 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
           <div className="flex items-center gap-3">
-            <Button
-              variant="ghost"
-              size="icon"
-              onClick={() => navigate("/dashboard")}
-            >
+            <Button variant="ghost" size="icon" onClick={() => navigate("/dashboard")}>
               <ArrowLeft className="h-5 w-5" />
             </Button>
             <div className="flex-1">
@@ -101,14 +230,24 @@ const CanvasEditor = () => {
               />
             </div>
           </div>
-          <div className="flex items-center gap-2">
+          <div className="flex flex-wrap items-center gap-2">
             <Badge variant="outline" className="text-xs">
               <Save className="mr-1 h-3 w-3" />
               {t("autoSaved")}
             </Badge>
-            <Button variant="outline" size="sm" className="gap-1.5" disabled>
-              <Sparkles className="h-4 w-4" />
-              {t("evaluateCanvas")}
+            <Button
+              variant="outline"
+              size="sm"
+              className="gap-1.5"
+              onClick={handleEvaluate}
+              disabled={evaluating}
+            >
+              {evaluating ? (
+                <Loader2 className="h-4 w-4 animate-spin" />
+              ) : (
+                <BarChart3 className="h-4 w-4" />
+              )}
+              {evaluating ? t("evaluating") : t("evaluateCanvas")}
             </Button>
             <Button variant="outline" size="sm" className="gap-1.5" disabled>
               <FileDown className="h-4 w-4" />
@@ -117,49 +256,159 @@ const CanvasEditor = () => {
           </div>
         </div>
 
-        {/* Quality Score */}
-        {challenge.quality_score !== null && (
-          <div className="mb-6 flex items-center gap-3 rounded-lg border border-border bg-card p-4">
-            <BarChart3 className="h-5 w-5 text-primary" />
-            <span className="font-medium text-card-foreground">
-              {t("qualityScore")}: {challenge.quality_score}/100
-            </span>
-          </div>
+        {/* Evaluation Results */}
+        {evaluation && (
+          <motion.div
+            initial={{ opacity: 0, y: -10 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="mb-6 space-y-4"
+          >
+            <Card className="border-primary/20 bg-card">
+              <CardContent className="p-6">
+                <div className="flex items-center justify-between mb-4">
+                  <div className="flex items-center gap-3">
+                    <BarChart3 className="h-6 w-6 text-primary" />
+                    <div>
+                      <span className="text-2xl font-bold text-card-foreground">
+                        {evaluation.score}/100
+                      </span>
+                      <span className={`ml-2 text-sm font-medium ${getLevelColor(evaluation.level)}`}>
+                        ({evaluation.level})
+                      </span>
+                    </div>
+                  </div>
+                  <Progress value={evaluation.score} className="w-32" />
+                </div>
+                <p className="text-sm text-muted-foreground mb-4">{evaluation.summary}</p>
+                {evaluation.recommendations?.length > 0 && (
+                  <div>
+                    <h4 className="text-sm font-semibold text-card-foreground mb-2">
+                      {t("recommendations")}
+                    </h4>
+                    <ul className="list-disc list-inside space-y-1">
+                      {evaluation.recommendations.map((rec, i) => (
+                        <li key={i} className="text-sm text-muted-foreground">{rec}</li>
+                      ))}
+                    </ul>
+                  </div>
+                )}
+              </CardContent>
+            </Card>
+          </motion.div>
         )}
 
         {/* Canvas Grid */}
         <div className="grid gap-4 md:grid-cols-2">
-          {sections.map((section, i) => (
-            <motion.div
-              key={section.key}
-              initial={{ opacity: 0, y: 15 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: i * 0.03 }}
-              className="rounded-xl border border-border bg-card p-5 shadow-sm"
-            >
-              <div className="mb-3 flex items-center justify-between">
-                <h3 className="text-sm font-semibold uppercase tracking-wider text-primary">
-                  {i + 1}. {t(section.labelKey)}
-                </h3>
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  className="h-7 gap-1 text-xs text-muted-foreground"
-                  disabled
-                >
-                  <Sparkles className="h-3 w-3" />
-                  {t("improveWithAI")}
-                </Button>
-              </div>
-              <Textarea
-                value={challenge.canvas[section.key]}
-                onChange={(e) => handleFieldChange(section.key, e.target.value)}
-                placeholder={t(section.placeholderKey)}
-                className="min-h-[120px] resize-y border-border bg-background text-sm"
-              />
-            </motion.div>
-          ))}
+          {sections.map((section, i) => {
+            const sectionEval = evaluation?.sections?.[section.key];
+            return (
+              <motion.div
+                key={section.key}
+                initial={{ opacity: 0, y: 15 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: i * 0.03 }}
+                className="rounded-xl border border-border bg-card p-5 shadow-sm"
+              >
+                <div className="mb-3 flex items-center justify-between">
+                  <div className="flex items-center gap-2">
+                    <h3 className="text-sm font-semibold uppercase tracking-wider text-primary">
+                      {i + 1}. {t(section.labelKey)}
+                    </h3>
+                    {sectionEval && (
+                      <Badge variant="outline" className="text-xs">
+                        {sectionEval.score}/100
+                      </Badge>
+                    )}
+                  </div>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    className="h-7 gap-1 text-xs text-muted-foreground"
+                    disabled={improvingSection === section.key}
+                    onClick={() => handleImproveSection(section.key, t(section.labelKey))}
+                  >
+                    {improvingSection === section.key ? (
+                      <Loader2 className="h-3 w-3 animate-spin" />
+                    ) : (
+                      <Sparkles className="h-3 w-3" />
+                    )}
+                    {improvingSection === section.key ? t("improving") : t("improveWithAI")}
+                  </Button>
+                </div>
+                {sectionEval?.feedback && (
+                  <p className="mb-2 text-xs text-muted-foreground italic">{sectionEval.feedback}</p>
+                )}
+                <Textarea
+                  value={challenge.canvas[section.key]}
+                  onChange={(e) => handleFieldChange(section.key, e.target.value)}
+                  placeholder={t(section.placeholderKey)}
+                  className="min-h-[120px] resize-y border-border bg-background text-sm"
+                />
+              </motion.div>
+            );
+          })}
         </div>
+
+        {/* Infographic Section */}
+        {evaluation && (
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="mt-8 mb-8"
+          >
+            <Card className="border-accent/30">
+              <CardContent className="p-6">
+                <div className="flex items-center justify-between mb-4">
+                  <div className="flex items-center gap-2">
+                    <ImageIcon className="h-5 w-5 text-accent" />
+                    <h3 className="text-lg font-semibold text-card-foreground">
+                      {t("generateInfographic")}
+                    </h3>
+                  </div>
+                  <Button
+                    onClick={handleGenerateInfographic}
+                    disabled={generatingInfographic}
+                    className="gap-2"
+                  >
+                    {generatingInfographic ? (
+                      <Loader2 className="h-4 w-4 animate-spin" />
+                    ) : (
+                      <ImageIcon className="h-4 w-4" />
+                    )}
+                    {generatingInfographic ? t("generatingInfographic") : t("generateInfographic")}
+                  </Button>
+                </div>
+
+                {generatingInfographic && (
+                  <div className="flex flex-col items-center py-12">
+                    <Loader2 className="h-12 w-12 animate-spin text-primary mb-4" />
+                    <p className="text-sm text-muted-foreground">{t("generatingInfographic")}</p>
+                  </div>
+                )}
+
+                {infographicUrl && (
+                  <div className="space-y-4">
+                    <div className="overflow-hidden rounded-lg border border-border">
+                      <img
+                        src={infographicUrl}
+                        alt="Challenge Canvas Infographic"
+                        className="w-full"
+                      />
+                    </div>
+                    <div className="flex justify-end">
+                      <a href={infographicUrl} download target="_blank" rel="noopener noreferrer">
+                        <Button variant="outline" className="gap-2">
+                          <Download className="h-4 w-4" />
+                          {t("downloadInfographic")}
+                        </Button>
+                      </a>
+                    </div>
+                  </div>
+                )}
+              </CardContent>
+            </Card>
+          </motion.div>
+        )}
       </div>
 
       <Footer />
