@@ -12,6 +12,7 @@ import Dashboard from "./pages/Dashboard";
 import CanvasEditor from "./pages/CanvasEditor";
 import Auth from "./pages/Auth";
 import NotFound from "./pages/NotFound";
+import Manual from "./pages/Manual";
 
 const queryClient = new QueryClient();
 
@@ -37,6 +38,7 @@ const App = () => (
                 <Route path="/auth" element={<Auth />} />
                 <Route path="/dashboard" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
                 <Route path="/canvas/:id" element={<ProtectedRoute><CanvasEditor /></ProtectedRoute>} />
+                <Route path="/manual" element={<ProtectedRoute><Manual /></ProtectedRoute>} />
                 <Route path="*" element={<NotFound />} />
               </Routes>
             </BrowserRouter>
