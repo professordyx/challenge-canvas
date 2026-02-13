@@ -111,6 +111,7 @@ export const translations = {
     downloadInfographic: "Baixar Infográfico",
     evaluateFirst: "Avalie o canvas antes de gerar o infográfico",
     sectionEmpty: "Preencha esta seção antes de melhorar com IA",
+    manual: "Manual de Uso",
   },
   es: {
     heroTitle: "Estructure problemas complejos con claridad estratégica",
@@ -214,6 +215,7 @@ export const translations = {
     downloadInfographic: "Descargar Infografía",
     evaluateFirst: "Evalúe el canvas antes de generar la infografía",
     sectionEmpty: "Complete esta sección antes de mejorar con IA",
+    manual: "Manual de Uso",
   },
 } as const;
 

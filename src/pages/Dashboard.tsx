@@ -32,6 +32,7 @@ import {
   Trash2,
   BarChart3,
   FileText,
+  BookOpen,
 } from "lucide-react";
 import Footer from "@/components/layout/Footer";
 
@@ -74,10 +75,16 @@ const Dashboard = () => {
           <h1 className="text-2xl font-bold text-foreground sm:text-3xl">
             {t("myChallenges")}
           </h1>
-          <Button onClick={() => setShowNew(true)} className="gap-2">
-            <Plus className="h-4 w-4" />
-            {t("createNew")}
-          </Button>
+          <div className="flex items-center gap-2">
+            <Button variant="outline" onClick={() => navigate("/manual")} className="gap-2">
+              <BookOpen className="h-4 w-4" />
+              {t("manual")}
+            </Button>
+            <Button onClick={() => setShowNew(true)} className="gap-2">
+              <Plus className="h-4 w-4" />
+              {t("createNew")}
+            </Button>
+          </div>
         </div>
 
         {challenges.length === 0 ? (
