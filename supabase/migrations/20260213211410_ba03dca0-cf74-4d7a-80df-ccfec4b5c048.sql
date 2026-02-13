@@ -1,0 +1,1 @@
+ALTER TABLE public.challenges ADD COLUMN infographic_url text;

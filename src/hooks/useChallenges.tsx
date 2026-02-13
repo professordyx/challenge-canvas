@@ -23,6 +23,7 @@ const dbToChallenge = (row: any): Challenge => ({
   updated_at: row.updated_at,
   canvas: { ...emptyCanvas, ...(typeof row.sections === 'object' ? row.sections : {}) },
   evaluation: row.evaluation ?? null,
+  infographic_url: row.infographic_url ?? null,
 });
 
 export const ChallengesProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
@@ -75,6 +76,7 @@ export const ChallengesProvider: React.FC<{ children: React.ReactNode }> = ({ ch
     if (updates.status !== undefined) dbUpdates.status = updates.status;
     if (updates.canvas !== undefined) dbUpdates.sections = updates.canvas;
     if (updates.evaluation !== undefined) dbUpdates.evaluation = updates.evaluation;
+    if (updates.infographic_url !== undefined) dbUpdates.infographic_url = updates.infographic_url;
     if (Object.keys(dbUpdates).length > 0) {
       supabase.from("challenges").update(dbUpdates).eq("id", id).then();
     }

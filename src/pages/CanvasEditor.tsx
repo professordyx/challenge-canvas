@@ -66,12 +66,15 @@ const CanvasEditor = () => {
     if (!challenge) navigate("/dashboard", { replace: true });
   }, [challenge, navigate]);
 
-  // Load saved evaluation
+  // Load saved evaluation and infographic
   useEffect(() => {
     if (challenge?.evaluation && !evaluation) {
       setEvaluation(challenge.evaluation);
     }
-  }, [challenge?.evaluation]);
+    if (challenge?.infographic_url && !infographicUrl) {
+      setInfographicUrl(challenge.infographic_url);
+    }
+  }, [challenge?.evaluation, challenge?.infographic_url]);
 
   const handleFieldChange = useCallback(
     (field: keyof CanvasFields, value: string) => {
@@ -191,6 +194,8 @@ const CanvasEditor = () => {
       if (error) throw error;
       if (data?.imageUrl) {
         setInfographicUrl(data.imageUrl);
+        // Save infographic URL to DB
+        updateChallenge(id, { infographic_url: data.imageUrl });
         toast({ title: t("infographicReady") });
       } else {
         throw new Error("No image returned");
@@ -488,6 +493,20 @@ const CanvasEditor = () => {
             </div>
           );
         })}
+
+        {/* Infographic */}
+        {infographicUrl && (
+          <div className="pdf-infographic">
+            <h3 className="pdf-section-title" style={{ marginBottom: '8px' }}>
+              {t("generateInfographic")}
+            </h3>
+            <img
+              src={infographicUrl}
+              alt="Challenge Canvas Infographic"
+              className="pdf-infographic-img"
+            />
+          </div>
+        )}
 
         {/* Footer */}
         <div className="pdf-footer">

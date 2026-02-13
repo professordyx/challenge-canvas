@@ -298,4 +298,18 @@
     font-size: 7.5pt;
     color: #999;
   }
+
+  .pdf-infographic {
+    page-break-before: always;
+    page-break-inside: avoid;
+    margin: 16px 0;
+  }
+
+  .pdf-infographic-img {
+    width: 100%;
+    max-height: 700px;
+    object-fit: contain;
+    border: 1px solid #e0e0e0;
+    border-radius: 6px;
+  }
 }
