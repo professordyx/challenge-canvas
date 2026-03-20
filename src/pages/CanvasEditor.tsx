@@ -24,6 +24,7 @@ import {
 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import Footer from "@/components/layout/Footer";
+import { MicButton } from "@/components/MicButton";
 import logoImg from "@/assets/logo-diocelio.png";
 
 interface SectionConfig {
