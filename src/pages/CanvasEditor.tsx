@@ -350,6 +350,10 @@ const CanvasEditor = () => {
                       )}
                       {improvingSection === section.key ? t("improving") : t("improveWithAI")}
                     </Button>
+                    <MicButton
+                      currentValue={challenge.canvas[section.key]}
+                      onTranscript={(text) => handleFieldChange(section.key, text)}
+                    />
                   </div>
                   {sectionEval?.feedback && (
                     <p className="mb-2 text-xs text-muted-foreground italic">{sectionEval.feedback}</p>
