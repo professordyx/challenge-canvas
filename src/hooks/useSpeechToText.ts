@@ -20,7 +20,7 @@ interface UseSpeechToTextOptions {
 
 export function useSpeechToText({ language = "pt", onResult, appendMode = true }: UseSpeechToTextOptions = {}) {
   const [isListening, setIsListening] = useState(false);
-  const recognitionRef = useRef<SpeechRecognition | null>(null);
+  const recognitionRef = useRef<ISpeechRecognition | null>(null);
   const accumulatedRef = useRef("");
 
   const langMap: Record<string, string> = {
