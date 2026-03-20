@@ -1,5 +1,17 @@
 import { useState, useRef, useCallback } from "react";
 
+interface ISpeechRecognition extends EventTarget {
+  lang: string;
+  continuous: boolean;
+  interimResults: boolean;
+  onresult: ((event: any) => void) | null;
+  onerror: ((event: any) => void) | null;
+  onend: (() => void) | null;
+  start(): void;
+  stop(): void;
+  abort(): void;
+}
+
 interface UseSpeechToTextOptions {
   language?: string;
   onResult?: (transcript: string) => void;
