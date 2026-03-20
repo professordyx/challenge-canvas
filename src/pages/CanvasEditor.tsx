@@ -24,6 +24,7 @@ import {
 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import Footer from "@/components/layout/Footer";
+import { MicButton } from "@/components/MicButton";
 import logoImg from "@/assets/logo-diocelio.png";
 
 interface SectionConfig {
@@ -335,20 +336,26 @@ const CanvasEditor = () => {
                         </Badge>
                       )}
                     </div>
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      className="h-7 gap-1 text-xs text-muted-foreground"
-                      disabled={improvingSection === section.key}
-                      onClick={() => handleImproveSection(section.key, t(section.labelKey))}
-                    >
-                      {improvingSection === section.key ? (
-                        <Loader2 className="h-3 w-3 animate-spin" />
-                      ) : (
-                        <Sparkles className="h-3 w-3" />
-                      )}
-                      {improvingSection === section.key ? t("improving") : t("improveWithAI")}
-                    </Button>
+                    <div className="flex items-center gap-1">
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        className="h-7 gap-1 text-xs text-muted-foreground"
+                        disabled={improvingSection === section.key}
+                        onClick={() => handleImproveSection(section.key, t(section.labelKey))}
+                      >
+                        {improvingSection === section.key ? (
+                          <Loader2 className="h-3 w-3 animate-spin" />
+                        ) : (
+                          <Sparkles className="h-3 w-3" />
+                        )}
+                        {improvingSection === section.key ? t("improving") : t("improveWithAI")}
+                      </Button>
+                      <MicButton
+                        currentValue={challenge.canvas[section.key]}
+                        onTranscript={(text) => handleFieldChange(section.key, text)}
+                      />
+                    </div>
                   </div>
                   {sectionEval?.feedback && (
                     <p className="mb-2 text-xs text-muted-foreground italic">{sectionEval.feedback}</p>

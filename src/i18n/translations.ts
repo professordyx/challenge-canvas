@@ -112,6 +112,9 @@ export const translations = {
     evaluateFirst: "Avalie o canvas antes de gerar o infográfico",
     sectionEmpty: "Preencha esta seção antes de melhorar com IA",
     manual: "Manual de Uso",
+    micListening: "Gravando...",
+    micStart: "Ditar",
+    speechNotSupported: "Seu navegador não suporta reconhecimento de voz.",
   },
   es: {
     heroTitle: "Estructure problemas complejos con claridad estratégica",
@@ -216,6 +219,9 @@ export const translations = {
     evaluateFirst: "Evalúe el canvas antes de generar la infografía",
     sectionEmpty: "Complete esta sección antes de mejorar con IA",
     manual: "Manual de Uso",
+    micListening: "Grabando...",
+    micStart: "Dictar",
+    speechNotSupported: "Su navegador no admite reconocimiento de voz.",
   },
 } as const;
 
