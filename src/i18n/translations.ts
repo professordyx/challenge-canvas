@@ -116,7 +116,6 @@ export const translations = {
     micStart: "Ditar",
     speechNotSupported: "Seu navegador não suporta reconhecimento de voz.",
   },
-  },
   es: {
     heroTitle: "Estructure problemas complejos con claridad estratégica",
     heroSubtitle: "Challenge Canvas Builder ayuda a consultores, líderes de innovación y equipos de negocios a diagnosticar y estructurar desafíos organizacionales con apoyo de IA.",
