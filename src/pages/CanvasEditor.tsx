@@ -335,7 +335,7 @@ const CanvasEditor = () => {
                           {sectionEval.score}/100
                         </Badge>
                       )}
-                    </div>
+                    <div className="flex items-center gap-1">
                     <Button
                       variant="ghost"
                       size="sm"
