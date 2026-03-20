@@ -35,7 +35,7 @@ export function useSpeechToText({ language = "pt", onResult, appendMode = true }
 
   const start = useCallback(
     (currentValue: string) => {
-      const SpeechRecognition = window.SpeechRecognition || (window as any).webkitSpeechRecognition;
+      const SpeechRecognition = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
       if (!SpeechRecognition) {
         alert("Seu navegador não suporta reconhecimento de voz.");
         return;
