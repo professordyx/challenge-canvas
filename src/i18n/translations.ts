@@ -220,6 +220,9 @@ export const translations = {
     evaluateFirst: "Evalúe el canvas antes de generar la infografía",
     sectionEmpty: "Complete esta sección antes de mejorar con IA",
     manual: "Manual de Uso",
+    micListening: "Grabando...",
+    micStart: "Dictar",
+    speechNotSupported: "Su navegador no admite reconocimiento de voz.",
   },
 } as const;
 
