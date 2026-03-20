@@ -112,6 +112,10 @@ export const translations = {
     evaluateFirst: "Avalie o canvas antes de gerar o infográfico",
     sectionEmpty: "Preencha esta seção antes de melhorar com IA",
     manual: "Manual de Uso",
+    micListening: "Gravando...",
+    micStart: "Ditar",
+    speechNotSupported: "Seu navegador não suporta reconhecimento de voz.",
+  },
   },
   es: {
     heroTitle: "Estructure problemas complejos con claridad estratégica",
