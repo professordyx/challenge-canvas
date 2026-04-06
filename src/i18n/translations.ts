@@ -240,6 +240,24 @@ export const translations = {
     micListening: "Grabando...",
     micStart: "Dictar",
     speechNotSupported: "Su navegador no admite reconocimiento de voz.",
+
+    // Sharing
+    shareCanvas: "Compartir Canvas",
+    shareDescription: "Invite a otro usuario a ver o editar este canvas.",
+    shareEmailPlaceholder: "Correo del usuario",
+    viewer: "Ver",
+    editor: "Editar",
+    shareSuccess: "¡Canvas compartido con éxito!",
+    shareError: "Error al compartir",
+    shareUserNotFound: "No se encontró ningún usuario con este correo.",
+    shareSelfError: "No puede compartir consigo mismo.",
+    shareAlreadyExists: "Este canvas ya fue compartido con este usuario.",
+    shareRevoked: "Acceso removido.",
+    noShares: "Ningún compartimiento activo.",
+    unknownUser: "Usuario",
+    sharedWithMe: "Compartidos conmigo",
+    sharedBadge: "Compartido",
+    readOnly: "Solo lectura",
   },
 } as const;
 
