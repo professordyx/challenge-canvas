@@ -14,6 +14,41 @@ export type Database = {
   }
   public: {
     Tables: {
+      challenge_shares: {
+        Row: {
+          challenge_id: string
+          id: string
+          owner_id: string
+          permission: string
+          shared_at: string
+          shared_with_id: string
+        }
+        Insert: {
+          challenge_id: string
+          id?: string
+          owner_id: string
+          permission?: string
+          shared_at?: string
+          shared_with_id: string
+        }
+        Update: {
+          challenge_id?: string
+          id?: string
+          owner_id?: string
+          permission?: string
+          shared_at?: string
+          shared_with_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "challenge_shares_challenge_id_fkey"
+            columns: ["challenge_id"]
+            isOneToOne: false
+            referencedRelation: "challenges"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       challenges: {
         Row: {
           created_at: string
@@ -85,7 +120,14 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      find_user_by_email: {
+        Args: { lookup_email: string }
+        Returns: {
+          avatar_url: string
+          display_name: string
+          user_id: string
+        }[]
+      }
     }
     Enums: {
       [_ in never]: never
