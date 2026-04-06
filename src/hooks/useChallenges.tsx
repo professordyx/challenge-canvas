@@ -3,8 +3,15 @@ import { Challenge, emptyCanvas, ChallengeStatus, CanvasFields } from "@/types/c
 import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
 
+interface SharedChallenge extends Challenge {
+  isShared: true;
+  permission: "viewer" | "editor";
+  ownerName?: string;
+}
+
 interface ChallengesContextType {
   challenges: Challenge[];
+  sharedChallenges: SharedChallenge[];
   loading: boolean;
   createChallenge: (title: string) => Promise<Challenge>;
   updateChallenge: (id: string, updates: Partial<Challenge>) => void;
@@ -29,27 +36,61 @@ const dbToChallenge = (row: any): Challenge => ({
 export const ChallengesProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const { user } = useAuth();
   const [challenges, setChallenges] = useState<Challenge[]>([]);
+  const [sharedChallenges, setSharedChallenges] = useState<SharedChallenge[]>([]);
   const [loading, setLoading] = useState(true);
 
-  // Fetch challenges from DB
+  // Fetch own + shared challenges
   useEffect(() => {
     if (!user) {
       setChallenges([]);
+      setSharedChallenges([]);
       setLoading(false);
       return;
     }
     setLoading(true);
-    supabase
-      .from("challenges")
-      .select("*")
-      .eq("user_id", user.id)
-      .order("created_at", { ascending: false })
-      .then(({ data, error }) => {
-        if (!error && data) {
-          setChallenges(data.map(dbToChallenge));
+
+    const fetchAll = async () => {
+      // Own challenges
+      const { data: ownData } = await supabase
+        .from("challenges")
+        .select("*")
+        .eq("user_id", user.id)
+        .order("created_at", { ascending: false });
+
+      if (ownData) setChallenges(ownData.map(dbToChallenge));
+
+      // Shared with me
+      const { data: shareData } = await supabase
+        .from("challenge_shares")
+        .select("*")
+        .eq("shared_with_id", user.id);
+
+      if (shareData && shareData.length > 0) {
+        const challengeIds = shareData.map((s: any) => s.challenge_id);
+        const { data: sharedData } = await supabase
+          .from("challenges")
+          .select("*")
+          .in("id", challengeIds);
+
+        if (sharedData) {
+          const enriched: SharedChallenge[] = sharedData.map((row: any) => {
+            const share = shareData.find((s: any) => s.challenge_id === row.id);
+            return {
+              ...dbToChallenge(row),
+              isShared: true as const,
+              permission: (share?.permission || "viewer") as "viewer" | "editor",
+            };
+          });
+          setSharedChallenges(enriched);
         }
-        setLoading(false);
-      });
+      } else {
+        setSharedChallenges([]);
+      }
+
+      setLoading(false);
+    };
+
+    fetchAll();
   }, [user]);
 
   const createChallenge = useCallback(async (title: string): Promise<Challenge> => {
@@ -68,6 +109,10 @@ export const ChallengesProvider: React.FC<{ children: React.ReactNode }> = ({ ch
 
   const updateChallenge = useCallback((id: string, updates: Partial<Challenge>) => {
     setChallenges((prev) =>
+      prev.map((c) => (c.id === id ? { ...c, ...updates, updated_at: new Date().toISOString() } : c))
+    );
+    // Also update shared challenges locally
+    setSharedChallenges((prev) =>
       prev.map((c) => (c.id === id ? { ...c, ...updates, updated_at: new Date().toISOString() } : c))
     );
     // Persist to DB
@@ -108,7 +153,7 @@ export const ChallengesProvider: React.FC<{ children: React.ReactNode }> = ({ ch
   }, []);
 
   return (
-    <ChallengesContext.Provider value={{ challenges, loading, createChallenge, updateChallenge, duplicateChallenge, deleteChallenge }}>
+    <ChallengesContext.Provider value={{ challenges, sharedChallenges, loading, createChallenge, updateChallenge, duplicateChallenge, deleteChallenge }}>
       {children}
     </ChallengesContext.Provider>
   );
