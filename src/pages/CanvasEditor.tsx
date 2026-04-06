@@ -56,8 +56,17 @@ const CanvasEditor = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const { t, language } = useLanguage();
-  const { challenges, updateChallenge } = useChallenges();
-  const challenge = challenges.find((c) => c.id === id);
+  const { user } = useAuth();
+  const { challenges, sharedChallenges, updateChallenge } = useChallenges();
+
+  // Find in own or shared
+  const ownChallenge = challenges.find((c) => c.id === id);
+  const sharedChallenge = sharedChallenges.find((c) => c.id === id);
+  const challenge = ownChallenge || sharedChallenge;
+  const isOwner = !!ownChallenge;
+  const isEditor = sharedChallenge?.permission === "editor";
+  const canEdit = isOwner || isEditor;
+
   const autoSaveTimer = useRef<ReturnType<typeof setTimeout>>();
   const { toast } = useToast();
 
@@ -66,6 +75,7 @@ const CanvasEditor = () => {
   const [evaluation, setEvaluation] = useState<Evaluation | null>(null);
   const [generatingInfographic, setGeneratingInfographic] = useState(false);
   const [infographicUrl, setInfographicUrl] = useState<string | null>(null);
+  const [shareOpen, setShareOpen] = useState(false);
 
   useEffect(() => {
     if (!challenge) navigate("/dashboard", { replace: true });
