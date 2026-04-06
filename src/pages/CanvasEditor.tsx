@@ -3,6 +3,7 @@ import { useParams, useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import { useLanguage } from "@/i18n/LanguageContext";
 import { useChallenges } from "../hooks/useChallenges";
+import { useAuth } from "@/hooks/useAuth";
 import { CanvasFields, Evaluation } from "@/types/challenge";
 import { TranslationKey } from "@/i18n/translations";
 import { supabase } from "@/integrations/supabase/client";
@@ -21,10 +22,13 @@ import {
   Loader2,
   ImageIcon,
   Download,
+  Share2,
+  Eye,
 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import Footer from "@/components/layout/Footer";
 import { MicButton } from "@/components/MicButton";
+import { ShareDialog } from "@/components/ShareDialog";
 import logoImg from "@/assets/logo-diocelio.png";
 
 interface SectionConfig {
@@ -52,8 +56,17 @@ const CanvasEditor = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const { t, language } = useLanguage();
-  const { challenges, updateChallenge } = useChallenges();
-  const challenge = challenges.find((c) => c.id === id);
+  const { user } = useAuth();
+  const { challenges, sharedChallenges, updateChallenge } = useChallenges();
+
+  // Find in own or shared
+  const ownChallenge = challenges.find((c) => c.id === id);
+  const sharedChallenge = sharedChallenges.find((c) => c.id === id);
+  const challenge = ownChallenge || sharedChallenge;
+  const isOwner = !!ownChallenge;
+  const isEditor = sharedChallenge?.permission === "editor";
+  const canEdit = isOwner || isEditor;
+
   const autoSaveTimer = useRef<ReturnType<typeof setTimeout>>();
   const { toast } = useToast();
 
@@ -62,6 +75,7 @@ const CanvasEditor = () => {
   const [evaluation, setEvaluation] = useState<Evaluation | null>(null);
   const [generatingInfographic, setGeneratingInfographic] = useState(false);
   const [infographicUrl, setInfographicUrl] = useState<string | null>(null);
+  const [shareOpen, setShareOpen] = useState(false);
 
   useEffect(() => {
     if (!challenge) navigate("/dashboard", { replace: true });
@@ -243,20 +257,40 @@ const CanvasEditor = () => {
                   onChange={(e) => handleTitleChange(e.target.value)}
                   className="border-none bg-transparent text-xl font-bold text-foreground focus-visible:ring-0 sm:text-2xl"
                   placeholder={t("challengeTitlePlaceholder")}
+                  readOnly={!canEdit}
                 />
               </div>
             </div>
             <div className="flex flex-wrap items-center gap-2">
-              <Badge variant="outline" className="text-xs">
-                <Save className="mr-1 h-3 w-3" />
-                {t("autoSaved")}
-              </Badge>
+              {!canEdit && (
+                <Badge variant="secondary" className="gap-1 text-xs">
+                  <Eye className="h-3 w-3" />
+                  {t("readOnly")}
+                </Badge>
+              )}
+              {canEdit && (
+                <Badge variant="outline" className="text-xs">
+                  <Save className="mr-1 h-3 w-3" />
+                  {t("autoSaved")}
+                </Badge>
+              )}
+              {isOwner && (
+                <Button
+                  variant="outline"
+                  size="sm"
+                  className="gap-1.5"
+                  onClick={() => setShareOpen(true)}
+                >
+                  <Share2 className="h-4 w-4" />
+                  {t("shareCanvas")}
+                </Button>
+              )}
               <Button
                 variant="outline"
                 size="sm"
                 className="gap-1.5"
                 onClick={handleEvaluate}
-                disabled={evaluating}
+                disabled={evaluating || !canEdit}
               >
                 {evaluating ? (
                   <Loader2 className="h-4 w-4 animate-spin" />
@@ -336,26 +370,28 @@ const CanvasEditor = () => {
                         </Badge>
                       )}
                     </div>
-                    <div className="flex items-center gap-1">
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        className="h-7 gap-1 text-xs text-muted-foreground"
-                        disabled={improvingSection === section.key}
-                        onClick={() => handleImproveSection(section.key, t(section.labelKey))}
-                      >
-                        {improvingSection === section.key ? (
-                          <Loader2 className="h-3 w-3 animate-spin" />
-                        ) : (
-                          <Sparkles className="h-3 w-3" />
-                        )}
-                        {improvingSection === section.key ? t("improving") : t("improveWithAI")}
-                      </Button>
-                      <MicButton
-                        currentValue={challenge.canvas[section.key]}
-                        onTranscript={(text) => handleFieldChange(section.key, text)}
-                      />
-                    </div>
+                    {canEdit && (
+                      <div className="flex items-center gap-1">
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          className="h-7 gap-1 text-xs text-muted-foreground"
+                          disabled={improvingSection === section.key}
+                          onClick={() => handleImproveSection(section.key, t(section.labelKey))}
+                        >
+                          {improvingSection === section.key ? (
+                            <Loader2 className="h-3 w-3 animate-spin" />
+                          ) : (
+                            <Sparkles className="h-3 w-3" />
+                          )}
+                          {improvingSection === section.key ? t("improving") : t("improveWithAI")}
+                        </Button>
+                        <MicButton
+                          currentValue={challenge.canvas[section.key]}
+                          onTranscript={(text) => handleFieldChange(section.key, text)}
+                        />
+                      </div>
+                    )}
                   </div>
                   {sectionEval?.feedback && (
                     <p className="mb-2 text-xs text-muted-foreground italic">{sectionEval.feedback}</p>
@@ -365,6 +401,7 @@ const CanvasEditor = () => {
                     onChange={(e) => handleFieldChange(section.key, e.target.value)}
                     placeholder={t(section.placeholderKey)}
                     className="min-h-[120px] resize-y border-border bg-background text-sm"
+                    readOnly={!canEdit}
                   />
                 </motion.div>
               );
@@ -524,6 +561,11 @@ const CanvasEditor = () => {
           </div>
         </div>
       </div>
+
+      {/* Share Dialog */}
+      {isOwner && id && (
+        <ShareDialog challengeId={id} open={shareOpen} onOpenChange={setShareOpen} />
+      )}
     </>
   );
 };
