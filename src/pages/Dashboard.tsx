@@ -172,6 +172,71 @@ const Dashboard = () => {
             </AnimatePresence>
           </div>
         )}
+
+        {/* Shared with me */}
+        {sharedChallenges.length > 0 && (
+          <div className="mt-12">
+            <h2 className="mb-4 flex items-center gap-2 text-xl font-bold text-foreground">
+              <Share2 className="h-5 w-5" />
+              {t("sharedWithMe")}
+            </h2>
+            <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+              {sharedChallenges.map((c, i) => (
+                <motion.div
+                  key={c.id}
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: i * 0.05 }}
+                >
+                  <Card className="flex h-full flex-col border-accent/30 transition-shadow hover:shadow-md">
+                    <CardHeader className="pb-3">
+                      <div className="flex items-start justify-between gap-2">
+                        <h3 className="line-clamp-2 font-semibold text-card-foreground">
+                          {c.title}
+                        </h3>
+                        <Badge variant="secondary" className="gap-1 text-xs">
+                          {c.permission === "editor" ? (
+                            <><PenLine className="h-3 w-3" />{t("editor")}</>
+                          ) : (
+                            <><Eye className="h-3 w-3" />{t("viewer")}</>
+                          )}
+                        </Badge>
+                      </div>
+                      <p className="text-xs text-muted-foreground">
+                        {t("sharedBadge")} • {new Date(c.created_at).toLocaleDateString()}
+                      </p>
+                    </CardHeader>
+                    <CardContent className="flex-1 pb-3">
+                      {c.quality_score !== null && (
+                        <div className="flex items-center gap-2">
+                          <BarChart3 className="h-4 w-4 text-muted-foreground" />
+                          <span className={`text-sm font-medium ${getScoreColor(c.quality_score)}`}>
+                            {t("qualityScore")}: {c.quality_score}/100
+                          </span>
+                        </div>
+                      )}
+                    </CardContent>
+                    <CardFooter className="gap-1 border-t border-border pt-3">
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => navigate(`/canvas/${c.id}`)}
+                        className="gap-1"
+                      >
+                        {c.permission === "editor" ? (
+                          <Pencil className="h-3.5 w-3.5" />
+                        ) : (
+                          <Eye className="h-3.5 w-3.5" />
+                        )}
+                        {c.permission === "editor" ? t("edit") : t("viewer")}
+                      </Button>
+                    </CardFooter>
+                  </Card>
+                </motion.div>
+              ))}
+            </div>
+          </div>
+        )}
       </div>
 
       {/* New Challenge Dialog */}
