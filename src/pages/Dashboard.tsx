@@ -48,7 +48,7 @@ const statusVariant: Record<ChallengeStatus, "default" | "secondary" | "outline"
 const Dashboard = () => {
   const { t } = useLanguage();
   const navigate = useNavigate();
-  const { challenges, createChallenge, duplicateChallenge, deleteChallenge } = useChallenges();
+  const { challenges, sharedChallenges, createChallenge, duplicateChallenge, deleteChallenge } = useChallenges();
   const [showNew, setShowNew] = useState(false);
   const [newTitle, setNewTitle] = useState("");
   const [deleteId, setDeleteId] = useState<string | null>(null);
