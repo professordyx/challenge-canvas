@@ -257,20 +257,40 @@ const CanvasEditor = () => {
                   onChange={(e) => handleTitleChange(e.target.value)}
                   className="border-none bg-transparent text-xl font-bold text-foreground focus-visible:ring-0 sm:text-2xl"
                   placeholder={t("challengeTitlePlaceholder")}
+                  readOnly={!canEdit}
                 />
               </div>
             </div>
             <div className="flex flex-wrap items-center gap-2">
-              <Badge variant="outline" className="text-xs">
-                <Save className="mr-1 h-3 w-3" />
-                {t("autoSaved")}
-              </Badge>
+              {!canEdit && (
+                <Badge variant="secondary" className="gap-1 text-xs">
+                  <Eye className="h-3 w-3" />
+                  {t("readOnly")}
+                </Badge>
+              )}
+              {canEdit && (
+                <Badge variant="outline" className="text-xs">
+                  <Save className="mr-1 h-3 w-3" />
+                  {t("autoSaved")}
+                </Badge>
+              )}
+              {isOwner && (
+                <Button
+                  variant="outline"
+                  size="sm"
+                  className="gap-1.5"
+                  onClick={() => setShareOpen(true)}
+                >
+                  <Share2 className="h-4 w-4" />
+                  {t("shareCanvas")}
+                </Button>
+              )}
               <Button
                 variant="outline"
                 size="sm"
                 className="gap-1.5"
                 onClick={handleEvaluate}
-                disabled={evaluating}
+                disabled={evaluating || !canEdit}
               >
                 {evaluating ? (
                   <Loader2 className="h-4 w-4 animate-spin" />
