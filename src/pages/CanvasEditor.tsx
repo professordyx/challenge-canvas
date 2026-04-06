@@ -561,6 +561,11 @@ const CanvasEditor = () => {
           </div>
         </div>
       </div>
+
+      {/* Share Dialog */}
+      {isOwner && id && (
+        <ShareDialog challengeId={id} open={shareOpen} onOpenChange={setShareOpen} />
+      )}
     </>
   );
 };
