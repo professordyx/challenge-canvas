@@ -3,6 +3,7 @@ import { useParams, useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import { useLanguage } from "@/i18n/LanguageContext";
 import { useChallenges } from "../hooks/useChallenges";
+import { useAuth } from "@/hooks/useAuth";
 import { CanvasFields, Evaluation } from "@/types/challenge";
 import { TranslationKey } from "@/i18n/translations";
 import { supabase } from "@/integrations/supabase/client";
@@ -21,10 +22,13 @@ import {
   Loader2,
   ImageIcon,
   Download,
+  Share2,
+  Eye,
 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import Footer from "@/components/layout/Footer";
 import { MicButton } from "@/components/MicButton";
+import { ShareDialog } from "@/components/ShareDialog";
 import logoImg from "@/assets/logo-diocelio.png";
 
 interface SectionConfig {
