@@ -33,6 +33,9 @@ import {
   BarChart3,
   FileText,
   BookOpen,
+  Share2,
+  Eye,
+  PenLine,
 } from "lucide-react";
 import Footer from "@/components/layout/Footer";
 
