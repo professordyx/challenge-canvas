@@ -370,26 +370,28 @@ const CanvasEditor = () => {
                         </Badge>
                       )}
                     </div>
-                    <div className="flex items-center gap-1">
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        className="h-7 gap-1 text-xs text-muted-foreground"
-                        disabled={improvingSection === section.key}
-                        onClick={() => handleImproveSection(section.key, t(section.labelKey))}
-                      >
-                        {improvingSection === section.key ? (
-                          <Loader2 className="h-3 w-3 animate-spin" />
-                        ) : (
-                          <Sparkles className="h-3 w-3" />
-                        )}
-                        {improvingSection === section.key ? t("improving") : t("improveWithAI")}
-                      </Button>
-                      <MicButton
-                        currentValue={challenge.canvas[section.key]}
-                        onTranscript={(text) => handleFieldChange(section.key, text)}
-                      />
-                    </div>
+                    {canEdit && (
+                      <div className="flex items-center gap-1">
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          className="h-7 gap-1 text-xs text-muted-foreground"
+                          disabled={improvingSection === section.key}
+                          onClick={() => handleImproveSection(section.key, t(section.labelKey))}
+                        >
+                          {improvingSection === section.key ? (
+                            <Loader2 className="h-3 w-3 animate-spin" />
+                          ) : (
+                            <Sparkles className="h-3 w-3" />
+                          )}
+                          {improvingSection === section.key ? t("improving") : t("improveWithAI")}
+                        </Button>
+                        <MicButton
+                          currentValue={challenge.canvas[section.key]}
+                          onTranscript={(text) => handleFieldChange(section.key, text)}
+                        />
+                      </div>
+                    )}
                   </div>
                   {sectionEval?.feedback && (
                     <p className="mb-2 text-xs text-muted-foreground italic">{sectionEval.feedback}</p>
@@ -399,6 +401,7 @@ const CanvasEditor = () => {
                     onChange={(e) => handleFieldChange(section.key, e.target.value)}
                     placeholder={t(section.placeholderKey)}
                     className="min-h-[120px] resize-y border-border bg-background text-sm"
+                    readOnly={!canEdit}
                   />
                 </motion.div>
               );
