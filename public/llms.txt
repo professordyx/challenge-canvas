@@ -7,3 +7,4 @@ Challenge Canvas Builder é uma ferramenta bilíngue (português e espanhol) que
 ## Pages
 
 - [Home](/): Página inicial com apresentação do produto, benefícios e acesso à plataforma.
+- [Problem Statement Template Guide](/guides/problem-statement-template): Guia bilíngue com template e exemplos para escrever declarações de problema eficazes no formato "How Might We".
