@@ -53,14 +53,14 @@ Gere a imagem como um infográfico profissional no estilo editorial ilustrado.`;
 
     if (!response.ok) {
       const status = response.status;
-      if (status === 429) {
-        return new Response(JSON.stringify({ error: "Rate limit exceeded." }), {
-          status: 429, headers: { ...corsHeaders, "Content-Type": "application/json" },
-        });
-      }
-      const t = await response.text();
+      const t = await response.text().catch(() => "");
       console.error("Gemini image error:", status, t);
-      throw new Error("Gemini API error");
+      const msg = status === 429
+        ? "O serviço de geração de imagens está temporariamente sobrecarregado. Tente novamente em alguns instantes."
+        : "Não foi possível gerar o infográfico no momento.";
+      return new Response(JSON.stringify({ error: msg, fallback: true }), {
+        status: 200, headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
     }
 
     const data = await response.json();
