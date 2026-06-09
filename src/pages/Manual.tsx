@@ -501,6 +501,7 @@ const Manual = () => {
       </div>
       <Footer />
     </div>
+    </>
   );
 };
 
