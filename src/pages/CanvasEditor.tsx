@@ -139,6 +139,13 @@ const CanvasEditor = () => {
         throw new Error(err.error || "AI error");
       }
 
+      // Detect JSON error returned with 200 (fallback signal to avoid runtime overlay)
+      const contentType = resp.headers.get("content-type") || "";
+      if (contentType.includes("application/json")) {
+        const errJson = await resp.json().catch(() => ({}));
+        throw new Error(errJson.error || "AI error");
+      }
+
       const reader = resp.body?.getReader();
       if (!reader) throw new Error("No reader");
       const decoder = new TextDecoder();
