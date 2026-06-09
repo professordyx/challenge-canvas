@@ -13,6 +13,7 @@ import CanvasEditor from "./pages/CanvasEditor";
 import Auth from "./pages/Auth";
 import NotFound from "./pages/NotFound";
 import Manual from "./pages/Manual";
+import ProblemStatementGuide from "./pages/ProblemStatementGuide";
 
 const queryClient = new QueryClient();
 
@@ -40,6 +41,7 @@ const App = () => (
                   <Route path="/dashboard" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
                   <Route path="/canvas/:id" element={<ProtectedRoute><CanvasEditor /></ProtectedRoute>} />
                   <Route path="/manual" element={<ProtectedRoute><Manual /></ProtectedRoute>} />
+                  <Route path="/guides/problem-statement-template" element={<ProblemStatementGuide />} />
                   <Route path="*" element={<NotFound />} />
                 </Routes>
               </main>
