@@ -72,9 +72,9 @@ const Landing = () => {
                 <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-lg bg-primary/10">
                   <b.icon className="h-6 w-6 text-primary" />
                 </div>
-                <h3 className="mb-2 text-lg font-semibold text-card-foreground">
+                <h2 className="mb-2 text-lg font-semibold text-card-foreground">
                   {t(b.titleKey)}
-                </h3>
+                </h2>
                 <p className="text-sm leading-relaxed text-muted-foreground">
                   {t(b.descKey)}
                 </p>
