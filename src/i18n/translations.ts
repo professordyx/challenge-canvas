@@ -134,6 +134,17 @@ export const translations = {
     sharedWithMe: "Compartilhados comigo",
     sharedBadge: "Compartilhado",
     readOnly: "Somente leitura",
+
+    // Meta
+    metaAuthTitle: "Entrar | Challenge Canvas Builder",
+    metaAuthDesc: "Acesse sua conta no Challenge Canvas Builder para estruturar desafios organizacionais com apoio de IA.",
+    metaDashboardTitle: "Dashboard | Challenge Canvas Builder",
+    metaDashboardDesc: "Gerencie seus desafios organizacionais, acompanhe scores de qualidade e acesse canvas compartilhados.",
+    metaCanvasDesc: "Edite e avalie seu Challenge Canvas com apoio de inteligência artificial.",
+    metaManualTitle: "Manual | Challenge Canvas Builder",
+    metaManualDesc: "Guia completo sobre Design Thinking, Problem Framing e uso do Challenge Canvas Builder.",
+    metaNotFoundTitle: "404 | Challenge Canvas Builder",
+    metaNotFoundDesc: "A página que você procura não foi encontrada.",
   },
   es: {
     heroTitle: "Estructure problemas complejos con claridad estratégica",
