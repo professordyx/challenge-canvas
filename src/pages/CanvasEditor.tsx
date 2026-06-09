@@ -250,6 +250,13 @@ const CanvasEditor = () => {
 
   return (
     <>
+      <Helmet>
+        <title>{challenge.title ? `${challenge.title} | Challenge Canvas Builder` : t("metaDashboardTitle")}</title>
+        <meta name="description" content={t("metaCanvasDesc")} />
+        <meta property="og:title" content={challenge.title ? `${challenge.title} | Challenge Canvas Builder` : t("metaDashboardTitle")} />
+        <meta property="og:description" content={t("metaCanvasDesc")} />
+        <link rel="canonical" href={`https://challengecanvas.com/canvas/${id}`} />
+      </Helmet>
       {/* Screen view */}
       <div className="flex min-h-[calc(100vh-4rem)] flex-col print:hidden">
         <div className="mx-auto w-full max-w-6xl flex-1 px-4 py-6 sm:px-6">
