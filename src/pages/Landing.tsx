@@ -22,6 +22,8 @@ const Landing = () => {
         <meta name="description" content="Estruture problemas complexos com clareza estratégica. Ferramenta de problem framing para consultores e líderes de inovação." />
         <meta property="og:title" content="Challenge Canvas Builder — Diocélio Goulart" />
         <meta property="og:description" content="Estruture problemas complexos com clareza estratégica. Ferramenta de problem framing para consultores e líderes de inovação." />
+        <meta property="og:url" content="https://challengecanvas.com/" />
+        <meta property="og:image" content="https://challengecanvas.com/og-image.jpg" />
         <link rel="canonical" href="https://challengecanvas.com/" />
       </Helmet>
     <div className="flex min-h-[calc(100vh-4rem)] flex-col">

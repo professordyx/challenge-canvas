@@ -79,6 +79,8 @@ const Dashboard = () => {
         <meta name="description" content={t("metaDashboardDesc")} />
         <meta property="og:title" content={t("metaDashboardTitle")} />
         <meta property="og:description" content={t("metaDashboardDesc")} />
+        <meta property="og:url" content="https://challengecanvas.com/dashboard" />
+        <meta property="og:image" content="https://challengecanvas.com/og-image.jpg" />
         <link rel="canonical" href="https://challengecanvas.com/dashboard" />
       </Helmet>
     <div className="flex min-h-[calc(100vh-4rem)] flex-col">
