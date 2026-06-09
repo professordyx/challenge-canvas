@@ -134,6 +134,17 @@ export const translations = {
     sharedWithMe: "Compartilhados comigo",
     sharedBadge: "Compartilhado",
     readOnly: "Somente leitura",
+
+    // Meta
+    metaAuthTitle: "Entrar | Challenge Canvas Builder",
+    metaAuthDesc: "Acesse sua conta no Challenge Canvas Builder para estruturar desafios organizacionais com apoio de IA.",
+    metaDashboardTitle: "Dashboard | Challenge Canvas Builder",
+    metaDashboardDesc: "Gerencie seus desafios organizacionais, acompanhe scores de qualidade e acesse canvas compartilhados.",
+    metaCanvasDesc: "Edite e avalie seu Challenge Canvas com apoio de inteligência artificial.",
+    metaManualTitle: "Manual | Challenge Canvas Builder",
+    metaManualDesc: "Guia completo sobre Design Thinking, Problem Framing e uso do Challenge Canvas Builder.",
+    metaNotFoundTitle: "404 | Challenge Canvas Builder",
+    metaNotFoundDesc: "A página que você procura não foi encontrada.",
   },
   es: {
     heroTitle: "Estructure problemas complejos con claridad estratégica",
@@ -260,6 +271,17 @@ export const translations = {
     sharedWithMe: "Compartidos conmigo",
     sharedBadge: "Compartido",
     readOnly: "Solo lectura",
+
+    // Meta
+    metaAuthTitle: "Iniciar sesión | Challenge Canvas Builder",
+    metaAuthDesc: "Acceda a su cuenta en Challenge Canvas Builder para estructurar desafíos organizacionales con apoyo de IA.",
+    metaDashboardTitle: "Panel | Challenge Canvas Builder",
+    metaDashboardDesc: "Administre sus desafíos organizacionales, siga puntuaciones de calidad y acceda a canvas compartilhados.",
+    metaCanvasDesc: "Edite y evalúe su Challenge Canvas con apoyo de inteligencia artificial.",
+    metaManualTitle: "Manual | Challenge Canvas Builder",
+    metaManualDesc: "Guía completa sobre Design Thinking, Problem Framing y uso del Challenge Canvas Builder.",
+    metaNotFoundTitle: "404 | Challenge Canvas Builder",
+    metaNotFoundDesc: "La página que busca no fue encontrada.",
   },
 } as const;
 

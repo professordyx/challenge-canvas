@@ -1,4 +1,5 @@
 import { useLanguage } from "@/i18n/LanguageContext";
+import { Helmet } from "react-helmet-async";
 import { Button } from "@/components/ui/button";
 import { ArrowLeft } from "lucide-react";
 import { useNavigate } from "react-router-dom";
@@ -430,6 +431,14 @@ const Manual = () => {
   const content = getContent(language);
 
   return (
+    <>
+      <Helmet>
+        <title>{t("metaManualTitle")}</title>
+        <meta name="description" content={t("metaManualDesc")} />
+        <meta property="og:title" content={t("metaManualTitle")} />
+        <meta property="og:description" content={t("metaManualDesc")} />
+        <link rel="canonical" href="https://challengecanvas.com/manual" />
+      </Helmet>
     <div className="flex min-h-[calc(100vh-4rem)] flex-col">
       <div className="mx-auto w-full max-w-4xl flex-1 px-4 py-8 sm:px-6">
         <Button
@@ -492,6 +501,7 @@ const Manual = () => {
       </div>
       <Footer />
     </div>
+    </>
   );
 };
 

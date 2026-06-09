@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { Navigate } from "react-router-dom";
+import { Helmet } from "react-helmet-async";
 import { motion } from "framer-motion";
 import { useAuth } from "@/hooks/useAuth";
 import { useLanguage } from "@/i18n/LanguageContext";
@@ -60,6 +61,14 @@ const Auth = () => {
   };
 
   return (
+    <>
+      <Helmet>
+        <title>{isSignUp ? t("createAccount") + " | Challenge Canvas Builder" : t("metaAuthTitle")}</title>
+        <meta name="description" content={t("metaAuthDesc")} />
+        <meta property="og:title" content={isSignUp ? t("createAccount") + " | Challenge Canvas Builder" : t("metaAuthTitle")} />
+        <meta property="og:description" content={t("metaAuthDesc")} />
+        <link rel="canonical" href="https://challengecanvas.com/auth" />
+      </Helmet>
     <div className="flex min-h-[calc(100vh-4rem)] items-center justify-center px-4">
       <motion.div
         initial={{ opacity: 0, y: 20 }}
@@ -160,6 +169,7 @@ const Auth = () => {
         </p>
       </motion.div>
     </div>
+    </>
   );
 };
 
