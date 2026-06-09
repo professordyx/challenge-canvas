@@ -16,6 +16,8 @@ const NotFound = () => {
         <meta name="description" content="A página que você procura não foi encontrada." />
         <meta property="og:title" content="404 | Challenge Canvas Builder" />
         <meta property="og:description" content="A página que você procura não foi encontrada." />
+        <meta property="og:url" content="https://challengecanvas.com/404" />
+        <meta property="og:image" content="https://challengecanvas.com/og-image.jpg" />
         <link rel="canonical" href="https://challengecanvas.com/404" />
         <meta name="robots" content="noindex" />
       </Helmet>

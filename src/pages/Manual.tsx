@@ -437,6 +437,8 @@ const Manual = () => {
         <meta name="description" content={t("metaManualDesc")} />
         <meta property="og:title" content={t("metaManualTitle")} />
         <meta property="og:description" content={t("metaManualDesc")} />
+        <meta property="og:url" content="https://challengecanvas.com/manual" />
+        <meta property="og:image" content="https://challengecanvas.com/og-image.jpg" />
         <link rel="canonical" href="https://challengecanvas.com/manual" />
       </Helmet>
     <div className="flex min-h-[calc(100vh-4rem)] flex-col">

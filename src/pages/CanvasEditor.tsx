@@ -256,6 +256,8 @@ const CanvasEditor = () => {
         <meta name="description" content={t("metaCanvasDesc")} />
         <meta property="og:title" content={challenge.title ? `${challenge.title} | Challenge Canvas Builder` : t("metaDashboardTitle")} />
         <meta property="og:description" content={t("metaCanvasDesc")} />
+        <meta property="og:url" content={`https://challengecanvas.com/canvas/${id}`} />
+        <meta property="og:image" content="https://challengecanvas.com/og-image.jpg" />
         <link rel="canonical" href={`https://challengecanvas.com/canvas/${id}`} />
       </Helmet>
       {/* Screen view */}
