@@ -19,6 +19,7 @@ export const translations = {
     newChallenge: "Novo Desafio",
     settings: "Configurações",
     language: "Idioma",
+    backToDashboard: "Voltar para o Dashboard",
     
     // Dashboard
     myChallenges: "Meus Desafios",
@@ -150,6 +151,7 @@ export const translations = {
     newChallenge: "Nuevo Desafío",
     settings: "Configuraciones",
     language: "Idioma",
+    backToDashboard: "Volver al Panel",
     
     myChallenges: "Mis Desafíos",
     createNew: "Nuevo Desafío",
