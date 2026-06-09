@@ -271,6 +271,17 @@ export const translations = {
     sharedWithMe: "Compartidos conmigo",
     sharedBadge: "Compartido",
     readOnly: "Solo lectura",
+
+    // Meta
+    metaAuthTitle: "Iniciar sesión | Challenge Canvas Builder",
+    metaAuthDesc: "Acceda a su cuenta en Challenge Canvas Builder para estructurar desafíos organizacionales con apoyo de IA.",
+    metaDashboardTitle: "Panel | Challenge Canvas Builder",
+    metaDashboardDesc: "Administre sus desafíos organizacionales, siga puntuaciones de calidad y acceda a canvas compartilhados.",
+    metaCanvasDesc: "Edite y evalúe su Challenge Canvas con apoyo de inteligencia artificial.",
+    metaManualTitle: "Manual | Challenge Canvas Builder",
+    metaManualDesc: "Guía completa sobre Design Thinking, Problem Framing y uso del Challenge Canvas Builder.",
+    metaNotFoundTitle: "404 | Challenge Canvas Builder",
+    metaNotFoundDesc: "La página que busca no fue encontrada.",
   },
 } as const;
 
