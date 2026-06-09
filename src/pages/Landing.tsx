@@ -16,6 +16,14 @@ const Landing = () => {
   const { t } = useLanguage();
 
   return (
+    <>
+      <Helmet>
+        <title>Challenge Canvas Builder — Diocélio Goulart</title>
+        <meta name="description" content="Estruture problemas complexos com clareza estratégica. Ferramenta de problem framing para consultores e líderes de inovação." />
+        <meta property="og:title" content="Challenge Canvas Builder — Diocélio Goulart" />
+        <meta property="og:description" content="Estruture problemas complexos com clareza estratégica. Ferramenta de problem framing para consultores e líderes de inovação." />
+        <link rel="canonical" href="https://challengecanvas.com/" />
+      </Helmet>
     <div className="flex min-h-[calc(100vh-4rem)] flex-col">
       {/* Hero */}
       <section className="relative overflow-hidden bg-gradient-to-br from-primary via-primary to-accent py-24 sm:py-32">
