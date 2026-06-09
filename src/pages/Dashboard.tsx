@@ -295,6 +295,7 @@ const Dashboard = () => {
 
       <Footer />
     </div>
+    </>
   );
 };
 
