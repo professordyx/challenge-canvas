@@ -29,7 +29,7 @@ export function MicButton({ currentValue, onTranscript }: MicButtonProps) {
           : "text-muted-foreground"
       )}
       onClick={() => toggle(currentValue)}
-      title={isListening ? t("micListening") : t("micStart")}
+      aria-label={isListening ? t("micListening") : t("micStart")}
     >
       {isListening ? (
         <>
