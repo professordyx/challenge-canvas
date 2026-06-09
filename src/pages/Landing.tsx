@@ -97,6 +97,7 @@ const Landing = () => {
         <Footer />
       </div>
     </div>
+    </>
   );
 };
 
