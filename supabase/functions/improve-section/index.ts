@@ -5,6 +5,15 @@ const corsHeaders = {
   "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
 };
 
+const aiUnavailableMessage =
+  "O serviço de IA está temporariamente sobrecarregado. Tente novamente em alguns instantes.";
+
+const jsonResponse = (body: Record<string, unknown>) =>
+  new Response(JSON.stringify(body), {
+    status: 200,
+    headers: { ...corsHeaders, "Content-Type": "application/json" },
+  });
+
 serve(async (req) => {
   if (req.method === "OPTIONS") return new Response(null, { headers: corsHeaders });
 
@@ -51,18 +60,11 @@ serve(async (req) => {
     }
 
     if (!response) {
-      const isRate = lastStatus === 429;
-      return new Response(
-        JSON.stringify({
-          error: isRate
-            ? "O serviço de IA está temporariamente sobrecarregado. Tente novamente em alguns instantes."
-            : "Gemini API error",
-        }),
-        {
-          status: 200,
-          headers: { ...corsHeaders, "Content-Type": "application/json" },
-        }
-      );
+      console.error("Gemini unavailable after retries:", lastStatus, lastBody);
+      return jsonResponse({
+        error: lastStatus === 429 ? aiUnavailableMessage : "Gemini API error",
+        fallback: true,
+      });
     }
 
     // Transform Gemini SSE format to OpenAI-compatible SSE format for the frontend
@@ -117,8 +119,9 @@ serve(async (req) => {
     });
   } catch (e) {
     console.error("improve-section error:", e);
-    return new Response(JSON.stringify({ error: e instanceof Error ? e.message : "Unknown error" }), {
-      status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" },
+    return jsonResponse({
+      error: e instanceof Error ? e.message : aiUnavailableMessage,
+      fallback: true,
     });
   }
 });
