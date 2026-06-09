@@ -214,6 +214,7 @@ const CanvasEditor = () => {
         body: { canvas: challenge.canvas, title: challenge.title, language, challengeId: id },
       });
       if (error) throw error;
+      if (data?.error) throw new Error(data.error);
       if (data?.imageUrl) {
         setInfographicUrl(data.imageUrl);
         // Save infographic URL to DB
