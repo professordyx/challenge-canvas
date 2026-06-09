@@ -123,17 +123,19 @@ const CanvasEditor = () => {
 
     setImprovingSection(sectionKey);
     try {
-      const resp = await fetch(
-        `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/improve-section`,
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY}`,
-          },
-          body: JSON.stringify({ sectionKey, sectionLabel, currentText, language }),
-        }
-      );
+      const SB_URL =
+        import.meta.env.VITE_SUPABASE_URL || "https://ssrzocxqvsqyvhffnvul.supabase.co";
+      const SB_KEY =
+        import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY ||
+        "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InNzcnpvY3hxdnNxeXZoZmZudnVsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzA5ODEzNjIsImV4cCI6MjA4NjU1NzM2Mn0.7wrOaMVAC6ATPKs9h4-BWm0WpnzZmv156bFxtWPyIos";
+      const resp = await fetch(`${SB_URL}/functions/v1/improve-section`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${SB_KEY}`,
+        },
+        body: JSON.stringify({ sectionKey, sectionLabel, currentText, language }),
+      });
 
       if (!resp.ok) {
         const err = await resp.json().catch(() => ({}));

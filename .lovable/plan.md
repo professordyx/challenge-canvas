@@ -1,16 +1,22 @@
-Diagnóstico atual:
-- O preview carregou corretamente no teste automatizado da rota `/`.
-- Não há erros de runtime registrados.
-- O servidor Vite está ativo.
-- O único erro no console é um 502 do endpoint interno de telemetria do preview (`/__l5e/trackevents`), que não bloqueia o app.
-- Há um aviso de CSS: `@import must precede all other statements`, vindo de `src/index.css`. Isso não explica a tela branca sozinho, mas deve ser corrigido para evitar comportamento inconsistente.
+## Diagnóstico
 
-Plano de correção:
-1. Ajustar `src/index.css` para mover o `@import` do Google Fonts para antes das diretivas `@tailwind`, eliminando o aviso do Vite.
-2. Revisar rapidamente o ponto de entrada (`src/main.tsx`) e a árvore de providers (`src/App.tsx`) para garantir que `LanguageProvider`, `HelmetProvider`, `BrowserRouter` e os providers de auth/desafios estejam em ordem segura.
-3. Reiniciar o preview/dev server após a alteração para limpar qualquer estado HMR/cache antigo.
-4. Validar no preview as rotas principais:
-   - `/`
-   - `/auth`
-   - `/guides/problem-statement-template`
-5. Se o preview carregar, confirmar que a tela branca era causada por estado antigo do preview/cache e pelo aviso de CSS pendente; se ainda falhar, capturar os novos logs do console e rede para identificar o erro real.
+- A tela branca acontece no navegador/domínio publicado porque o bundle publicado está inicializando o cliente do backend sem `VITE_SUPABASE_URL`, gerando: `supabaseUrl is required`.
+- O preview local está ok porque nele as variáveis existem.
+- O erro de IA não é sobrecarga temporária: os logs da função mostram `RESOURCE_EXHAUSTED` e `Your prepayment credits are depleted`, ou seja, os créditos da chave `Gemini_API_KEY` acabaram.
+
+## Plano de correção
+
+1. **Tela branca no navegador publicado**
+   - Ajustar a inicialização do cliente do backend para ter fallback seguro com a URL e chave pública do projeto quando as variáveis `VITE_` não forem injetadas no ambiente publicado.
+   - Aplicar o mesmo fallback no botão “melhorar seção”, que hoje chama a função usando `import.meta.env.VITE_SUPABASE_URL` diretamente.
+   - Manter a chave pública apenas no frontend; nenhuma chave privada será exposta.
+
+2. **Erro de IA “sobrecarregada”**
+   - Alterar a função `improve-section` para identificar quando o Gemini retorna crédito/quota esgotada (`RESOURCE_EXHAUSTED`, `prepayment credits are depleted`, 429).
+   - Trocar a mensagem genérica por uma mensagem clara em PT/ES: créditos da IA esgotados e necessidade de recarregar/atualizar a chave Gemini.
+   - Opcionalmente, se você aprovar, posso também migrar essa função de texto para Lovable AI como fallback, mas isso contraria a memória atual do projeto que diz para usar Gemini direto via `Gemini_API_KEY`; por isso a correção padrão será explicitar o erro real.
+
+3. **Publicação/validação**
+   - Depois das alterações, testar `/`, `/auth` e `/canvas/...` no preview.
+   - Implantar a função `improve-section` atualizada.
+   - Você precisará publicar o app novamente para o domínio `challengecanvas.com` receber a correção do bundle frontend.
