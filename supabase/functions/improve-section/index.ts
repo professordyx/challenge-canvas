@@ -7,6 +7,8 @@ const corsHeaders = {
 
 const aiUnavailableMessage =
   "O serviço de IA está temporariamente sobrecarregado. Tente novamente em alguns instantes.";
+const aiCreditsExhaustedMessage =
+  "Os créditos da chave Gemini foram esgotados. Acesse https://ai.studio/projects para recarregar ou atualize a chave Gemini_API_KEY nas configurações do projeto. / Los créditos de Gemini se agotaron: recarga en https://ai.studio/projects o actualiza la clave Gemini_API_KEY.";
 
 const jsonResponse = (body: Record<string, unknown>) =>
   new Response(JSON.stringify(body), {
@@ -61,10 +63,20 @@ serve(async (req) => {
 
     if (!response) {
       console.error("Gemini unavailable after retries:", lastStatus, lastBody);
-      return jsonResponse({
-        error: lastStatus === 429 ? aiUnavailableMessage : "Gemini API error",
-        fallback: true,
-      });
+      const lower = (lastBody || "").toLowerCase();
+      const isCreditsExhausted =
+        lower.includes("prepayment credits are depleted") ||
+        lower.includes("resource_exhausted") ||
+        lower.includes("quota");
+      let errMessage: string;
+      if (lastStatus === 429 && isCreditsExhausted) {
+        errMessage = aiCreditsExhaustedMessage;
+      } else if (lastStatus === 429) {
+        errMessage = aiUnavailableMessage;
+      } else {
+        errMessage = "Gemini API error";
+      }
+      return jsonResponse({ error: errMessage, fallback: true });
     }
 
     // Transform Gemini SSE format to OpenAI-compatible SSE format for the frontend
