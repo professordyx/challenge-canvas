@@ -59,7 +59,7 @@ serve(async (req) => {
             : "Gemini API error",
         }),
         {
-          status: isRate ? 429 : 500,
+          status: 200,
           headers: { ...corsHeaders, "Content-Type": "application/json" },
         }
       );
