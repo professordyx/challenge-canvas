@@ -1,15 +1,78 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
+import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
   "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
 };
 
+const MAX_BODY_BYTES = 64 * 1024;
+const MAX_TITLE = 500;
+const MAX_FIELD = 5000;
+
 serve(async (req) => {
   if (req.method === "OPTIONS") return new Response(null, { headers: corsHeaders });
 
   try {
-    const { canvas, title, language } = await req.json();
+    // --- Auth check ---
+    const authHeader = req.headers.get("Authorization");
+    if (!authHeader?.startsWith("Bearer ")) {
+      return new Response(JSON.stringify({ error: "Unauthorized" }), {
+        status: 401, headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
+    const sb = createClient(
+      Deno.env.get("SUPABASE_URL")!,
+      Deno.env.get("SUPABASE_ANON_KEY")!,
+    );
+    const { data: userData, error: userErr } = await sb.auth.getUser(
+      authHeader.replace("Bearer ", ""),
+    );
+    if (userErr || !userData?.user) {
+      return new Response(JSON.stringify({ error: "Unauthorized" }), {
+        status: 401, headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
+
+    // --- Body size limit ---
+    const raw = await req.text();
+    if (raw.length > MAX_BODY_BYTES) {
+      return new Response(JSON.stringify({ error: "Payload too large" }), {
+        status: 413, headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
+
+    let parsed: any;
+    try { parsed = JSON.parse(raw); } catch {
+      return new Response(JSON.stringify({ error: "Invalid JSON" }), {
+        status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
+
+    const { canvas, title, language } = parsed ?? {};
+    if (!canvas || typeof canvas !== "object" || Array.isArray(canvas)) {
+      return new Response(JSON.stringify({ error: "Invalid canvas" }), {
+        status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
+    if (typeof title !== "string" || title.length === 0 || title.length > MAX_TITLE) {
+      return new Response(JSON.stringify({ error: "Invalid title" }), {
+        status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
+    if (language !== "pt" && language !== "es") {
+      return new Response(JSON.stringify({ error: "Invalid language" }), {
+        status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
+    for (const [k, v] of Object.entries(canvas)) {
+      if (v != null && (typeof v !== "string" || v.length > MAX_FIELD)) {
+        return new Response(JSON.stringify({ error: `Invalid field: ${k}` }), {
+          status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" },
+        });
+      }
+    }
+
     const GEMINI_API_KEY = Deno.env.get("Gemini_API_KEY");
     if (!GEMINI_API_KEY) throw new Error("Gemini_API_KEY is not configured");
 
