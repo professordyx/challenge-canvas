@@ -1,4 +1,11 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
+import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
+
+const MAX_BODY_BYTES = 64 * 1024;
+const MAX_LABEL = 200;
+const MAX_KEY = 100;
+const MAX_TEXT = 8000;
+
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -20,9 +27,48 @@ serve(async (req) => {
   if (req.method === "OPTIONS") return new Response(null, { headers: corsHeaders });
 
   try {
-    const { sectionKey, sectionLabel, currentText, language } = await req.json();
+    // --- Auth check ---
+    const authHeader = req.headers.get("Authorization");
+    if (!authHeader?.startsWith("Bearer ")) {
+      return jsonResponse({ error: "Unauthorized" });
+    }
+    const sb = createClient(
+      Deno.env.get("SUPABASE_URL")!,
+      Deno.env.get("SUPABASE_ANON_KEY")!,
+    );
+    const { data: userData, error: userErr } = await sb.auth.getUser(
+      authHeader.replace("Bearer ", ""),
+    );
+    if (userErr || !userData?.user) {
+      return jsonResponse({ error: "Unauthorized" });
+    }
+
+    // --- Body size + parse ---
+    const raw = await req.text();
+    if (raw.length > MAX_BODY_BYTES) {
+      return jsonResponse({ error: "Payload too large" });
+    }
+    let parsed: any;
+    try { parsed = JSON.parse(raw); } catch {
+      return jsonResponse({ error: "Invalid JSON" });
+    }
+    const { sectionKey, sectionLabel, currentText, language } = parsed ?? {};
+    if (typeof sectionKey !== "string" || sectionKey.length === 0 || sectionKey.length > MAX_KEY) {
+      return jsonResponse({ error: "Invalid sectionKey" });
+    }
+    if (typeof sectionLabel !== "string" || sectionLabel.length === 0 || sectionLabel.length > MAX_LABEL) {
+      return jsonResponse({ error: "Invalid sectionLabel" });
+    }
+    if (typeof currentText !== "string" || currentText.length === 0 || currentText.length > MAX_TEXT) {
+      return jsonResponse({ error: "Invalid currentText" });
+    }
+    if (language !== "pt" && language !== "es") {
+      return jsonResponse({ error: "Invalid language" });
+    }
+
     const GEMINI_API_KEY = Deno.env.get("Gemini_API_KEY");
     if (!GEMINI_API_KEY) throw new Error("Gemini_API_KEY is not configured");
+
 
     const lang = language === "es" ? "español" : "português brasileiro";
 
