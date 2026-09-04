@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=DM+Sans:wght@400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Archivo:wght@500;600;700;800;900&family=Rubik:wght@300;400;500;600;700&display=swap');
 
 @tailwind base;
 @tailwind components;
@@ -6,8 +6,8 @@
 
 @layer base {
   :root {
-    --background: 210 20% 98%;
-    --foreground: 215 28% 17%;
+    --background: 210 33% 98%;
+    --foreground: 211 42% 24%;
 
     --card: 0 0% 100%;
     --card-foreground: 215 28% 17%;
@@ -15,7 +15,7 @@
     --popover: 0 0% 100%;
     --popover-foreground: 215 28% 17%;
 
-    --primary: 213 56% 24%;
+    --primary: 211 42% 28%;
     --primary-foreground: 210 40% 98%;
 
     --secondary: 210 30% 94%;
@@ -24,7 +24,7 @@
     --muted: 210 20% 95%;
     --muted-foreground: 215 14% 46%;
 
-    --accent: 195 60% 36%;
+    --accent: 164 42% 30%;
     --accent-foreground: 0 0% 100%;
 
     --destructive: 0 72% 51%;
@@ -32,20 +32,20 @@
 
     --border: 214 20% 88%;
     --input: 214 20% 88%;
-    --ring: 213 56% 24%;
+    --ring: 164 42% 30%;
 
-    --radius: 0.625rem;
+    --radius: 0.75rem;
 
-    --sidebar-background: 213 56% 24%;
+    --sidebar-background: 211 42% 24%;
     --sidebar-foreground: 210 40% 98%;
-    --sidebar-primary: 195 60% 36%;
+    --sidebar-primary: 164 42% 34%;
     --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent: 213 50% 30%;
+    --sidebar-accent: 211 40% 30%;
     --sidebar-accent-foreground: 210 40% 98%;
     --sidebar-border: 213 40% 35%;
-    --sidebar-ring: 195 60% 36%;
+    --sidebar-ring: 164 42% 34%;
 
-    --success: 152 60% 40%;
+    --success: 164 45% 34%;
     --success-foreground: 0 0% 100%;
     --warning: 38 92% 50%;
     --warning-foreground: 0 0% 100%;
@@ -61,8 +61,8 @@
     --popover: 215 25% 14%;
     --popover-foreground: 210 25% 92%;
 
-    --primary: 195 60% 50%;
-    --primary-foreground: 215 28% 10%;
+    --primary: 164 40% 45%;
+    --primary-foreground: 0 0% 100%;
 
     --secondary: 215 20% 20%;
     --secondary-foreground: 210 25% 92%;
@@ -70,7 +70,7 @@
     --muted: 215 20% 20%;
     --muted-foreground: 215 15% 60%;
 
-    --accent: 195 60% 40%;
+    --accent: 164 42% 38%;
     --accent-foreground: 0 0% 100%;
 
     --destructive: 0 62% 40%;
@@ -78,7 +78,7 @@
 
     --border: 215 20% 22%;
     --input: 215 20% 22%;
-    --ring: 195 60% 50%;
+    --ring: 164 40% 45%;
 
     --sidebar-background: 215 28% 8%;
     --sidebar-foreground: 210 25% 92%;
@@ -103,11 +103,13 @@
 
   body {
     @apply bg-background text-foreground font-sans antialiased;
-    font-family: 'Inter', 'DM Sans', system-ui, sans-serif;
+    font-family: 'Rubik', system-ui, sans-serif;
   }
 
   h1, h2, h3, h4, h5, h6 {
-    font-family: 'DM Sans', 'Inter', system-ui, sans-serif;
+    font-family: 'Archivo', system-ui, sans-serif;
+    font-weight: 800;
+    letter-spacing: -0.02em;
   }
 }
 
@@ -129,7 +131,7 @@
 
   .print-pdf {
     display: block !important;
-    font-family: 'Inter', 'DM Sans', system-ui, sans-serif;
+    font-family: 'Rubik', system-ui, sans-serif;
   }
 
   .pdf-header {
@@ -154,7 +156,7 @@
   .pdf-app-name {
     font-size: 16pt;
     font-weight: 700;
-    color: hsl(213 56% 24%);
+    color: hsl(211 42% 28%);
     margin: 0;
     line-height: 1.2;
   }
@@ -176,17 +178,17 @@
 
   .pdf-divider {
     border: none;
-    border-top: 2px solid hsl(213 56% 24%);
+    border-top: 2px solid hsl(211 42% 28%);
     margin: 10px 0;
   }
 
   .pdf-title {
     font-size: 18pt;
     font-weight: 700;
-    color: hsl(213 56% 24%);
+    color: hsl(211 42% 28%);
     margin: 14px 0 12px;
     line-height: 1.3;
-    font-family: 'DM Sans', system-ui, sans-serif;
+    font-family: 'Archivo', system-ui, sans-serif;
   }
 
   .pdf-evaluation {
@@ -205,7 +207,7 @@
   .pdf-eval-score {
     font-size: 16pt;
     font-weight: 700;
-    color: hsl(213 56% 24%);
+    color: hsl(211 42% 28%);
   }
 
   .pdf-eval-level {
@@ -224,7 +226,7 @@
     font-size: 10pt;
     font-weight: 600;
     margin: 0 0 4px;
-    color: hsl(213 56% 24%);
+    color: hsl(211 42% 28%);
   }
 
   .pdf-eval-recs ul {
@@ -258,14 +260,14 @@
     font-weight: 700;
     text-transform: uppercase;
     letter-spacing: 0.5px;
-    color: hsl(195 60% 36%);
+    color: hsl(164 42% 30%);
     margin: 0;
   }
 
   .pdf-section-score {
     font-size: 9pt;
     font-weight: 600;
-    color: hsl(213 56% 24%);
+    color: hsl(211 42% 28%);
     background: #e8eef4;
     padding: 1px 8px;
     border-radius: 4px;

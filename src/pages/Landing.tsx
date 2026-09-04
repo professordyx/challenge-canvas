@@ -54,13 +54,17 @@ const Landing = () => {
             className="mt-10 flex flex-col items-center justify-center gap-4 sm:flex-row"
           >
             <Link to="/auth">
-              <Button size="lg" className="gap-2 bg-background text-foreground hover:bg-background/90">
+              <Button size="lg" className="gap-2 bg-accent text-accent-foreground shadow-lg hover:bg-accent/90">
                 {t("createAccount")}
                 <ArrowRight className="h-4 w-4" />
               </Button>
             </Link>
             <Link to="/auth">
-              <Button size="lg" className="gap-2 bg-background text-foreground hover:bg-primary hover:text-primary-foreground">
+              <Button
+                size="lg"
+                variant="outline"
+                className="gap-2 border-primary-foreground/40 bg-transparent text-primary-foreground hover:bg-primary-foreground hover:text-primary"
+              >
                 {t("signIn")}
               </Button>
             </Link>
