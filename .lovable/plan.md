@@ -5,7 +5,7 @@ Trocar o Gemini pela API da Anthropic (Claude Sonnet 5.5) nas funções "Melhora
 ## Passos
 
 1. **Chave da Anthropic**
-   - Pedir a chave pelo formulário seguro, salva como `ANTHROPIC_API_KEY` (só fica no servidor, nunca no navegador).
+   - Usar a chave já salva como `anthropic_challenge_canvas` (só fica no servidor, nunca no navegador).
 
 2. **Melhorar com IA (`improve-section`)**
    - Chamar a API de mensagens da Anthropic com streaming, usando o Claude Sonnet 5.5.
@@ -18,7 +18,7 @@ Trocar o Gemini pela API da Anthropic (Claude Sonnet 5.5) nas funções "Melhora
    - Erros retornados como mensagem amigável em vez de tela de erro.
 
 4. **Memória do projeto**
-   - Atualizar a regra "Gemini direto": texto e avaliação usam Anthropic via `ANTHROPIC_API_KEY`; o infográfico continua no Gemini via `Gemini_API_KEY`.
+   - Atualizar a regra "Gemini direto": texto e avaliação usam Anthropic via `anthropic_challenge_canvas`; o infográfico continua no Gemini via `Gemini_API_KEY`.
 
 5. **Validação**
    - Publicar as duas funções e testar cada uma com um usuário logado e um canvas real.
