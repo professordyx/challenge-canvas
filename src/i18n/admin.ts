@@ -1,5 +1,6 @@
 export const adminCopy = {
   pt: {
+    cost: 'Custo estimado', costNote: 'Estimativa pela tabela de preços abaixo (US$). A cobrança real está nas contas Anthropic e Google.', byUser: 'Uso por usuário', email: 'Email', calls: 'Chamadas', userFilter: 'Usuário', prices: 'Tabela de preços (US$)', priceIn: 'Entrada / 1M tokens', priceOut: 'Saída / 1M tokens', priceImg: 'Por imagem', save: 'Salvar', saved: 'Preços salvos', unpriced: 'Modelos sem preço:',
     title: 'Monitoramento de APIs', subtitle: 'Anthropic · Gemini', admin: 'Administração',
     period: 'Período', provider: 'API', operation: 'Função', status: 'Resultado', all: 'Todos',
     day: 'Últimas 24 horas', week: 'Últimos 7 dias', month: 'Últimos 30 dias',
@@ -15,6 +16,7 @@ export const adminCopy = {
     attemptsNote: 'Cada tentativa é contabilizada, incluindo chamadas a modelos alternativos.', user: 'Usuário (ID)',
   },
   es: {
+    cost: 'Costo estimado', costNote: 'Estimación según la tabla de precios abajo (US$). El cobro real está en las cuentas de Anthropic y Google.', byUser: 'Uso por usuario', email: 'Email', calls: 'Llamadas', userFilter: 'Usuario', prices: 'Tabla de precios (US$)', priceIn: 'Entrada / 1M tokens', priceOut: 'Salida / 1M tokens', priceImg: 'Por imagen', save: 'Guardar', saved: 'Precios guardados', unpriced: 'Modelos sin precio:',
     title: 'Monitoreo de APIs', subtitle: 'Anthropic · Gemini', admin: 'Administración',
     period: 'Período', provider: 'API', operation: 'Función', status: 'Resultado', all: 'Todos',
     day: 'Últimas 24 horas', week: 'Últimos 7 días', month: 'Últimos 30 días',
