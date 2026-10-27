@@ -186,6 +186,15 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      api_monitoring_summary: {
+        Args: {
+          operation_filter?: string
+          provider_filter?: string
+          since_at: string
+          status_filter?: string
+        }
+        Returns: Json
+      }
       find_user_by_email: {
         Args: { lookup_email: string }
         Returns: {
