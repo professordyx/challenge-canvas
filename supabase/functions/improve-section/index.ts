@@ -1,5 +1,6 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
+import { callClaude } from "../_shared/anthropic.ts";
 
 const MAX_BODY_BYTES = 64 * 1024;
 const MAX_LABEL = 200;
@@ -66,64 +67,16 @@ serve(async (req) => {
       return jsonResponse({ error: "Invalid language" });
     }
 
-    const GEMINI_API_KEY = Deno.env.get("Gemini_API_KEY");
-    if (!GEMINI_API_KEY) throw new Error("Gemini_API_KEY is not configured");
-
-
     const lang = language === "es" ? "español" : "português brasileiro";
 
     const systemPrompt = "Você é um consultor especialista em problem framing e inovação estratégica. Seu trabalho é melhorar textos de seções de um Challenge Canvas, tornando-os mais claros, completos, estratégicos e acionáveis. Responda sempre em " + lang + ". Retorne APENAS o texto melhorado, sem explicações adicionais. IMPORTANTE: NÃO use formatação Markdown (sem cerquilha, asteriscos, travessões, blocos de código, etc). Retorne texto puro com quebras de linha simples para separar parágrafos.";
     const userPrompt = `Melhore o seguinte texto da seção "${sectionLabel}" de um Challenge Canvas:\n\n"${currentText}"\n\nRetorne apenas o texto melhorado, mais completo e estratégico.`;
 
-    const models = ["gemini-2.5-flash", "gemini-2.5-flash-lite", "gemini-2.0-flash"];
-    let response: Response | null = null;
-    let lastStatus = 0;
-    let lastBody = "";
-
-    for (const model of models) {
-      for (let attempt = 0; attempt < 2; attempt++) {
-        const r = await fetch(
-          `https://generativelanguage.googleapis.com/v1beta/models/${model}:streamGenerateContent?alt=sse&key=${GEMINI_API_KEY}`,
-          {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({
-              contents: [
-                { role: "user", parts: [{ text: systemPrompt + "\n\n" + userPrompt }] },
-              ],
-            }),
-          }
-        );
-        if (r.ok) { response = r; break; }
-        lastStatus = r.status;
-        lastBody = await r.text();
-        console.error(`Gemini ${model} attempt ${attempt} error:`, r.status, lastBody);
-        if (r.status === 429 || r.status >= 500) {
-          await new Promise((res) => setTimeout(res, 800 * (attempt + 1)));
-          continue;
-        }
-        break;
-      }
-      if (response) break;
+    const result = await callClaude({ system: systemPrompt, user: userPrompt, stream: true });
+    if (!result.response) {
+      return jsonResponse({ error: result.error ?? aiUnavailableMessage, fallback: true });
     }
-
-    if (!response) {
-      console.error("Gemini unavailable after retries:", lastStatus, lastBody);
-      const lower = (lastBody || "").toLowerCase();
-      const isCreditsExhausted =
-        lower.includes("prepayment credits are depleted") ||
-        lower.includes("resource_exhausted") ||
-        lower.includes("quota");
-      let errMessage: string;
-      if (lastStatus === 429 && isCreditsExhausted) {
-        errMessage = aiCreditsExhaustedMessage;
-      } else if (lastStatus === 429) {
-        errMessage = aiUnavailableMessage;
-      } else {
-        errMessage = "Gemini API error";
-      }
-      return jsonResponse({ error: errMessage, fallback: true });
-    }
+    const response = result.response;
 
     // Transform Gemini SSE format to OpenAI-compatible SSE format for the frontend
     const { readable, writable } = new TransformStream();
@@ -152,7 +105,7 @@ serve(async (req) => {
 
             try {
               const parsed = JSON.parse(jsonStr);
-              const text = parsed.candidates?.[0]?.content?.parts?.[0]?.text;
+              const text = parsed.type === "content_block_delta" ? parsed.delta?.text : undefined;
               if (text) {
                 const sseChunk = `data: ${JSON.stringify({
                   choices: [{ delta: { content: text } }],
