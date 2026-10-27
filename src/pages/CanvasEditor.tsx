@@ -197,6 +197,7 @@ const CanvasEditor = () => {
         body: { canvas: challenge.canvas, title: challenge.title, language },
       });
       if (error) throw error;
+      if (data?.error) throw new Error(data.error);
       setEvaluation(data);
       // Save evaluation to DB
       updateChallenge(id, { evaluation: data, quality_score: data.score });
