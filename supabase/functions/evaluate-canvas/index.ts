@@ -1,5 +1,6 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
+import { callClaude } from "../_shared/anthropic.ts";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -73,9 +74,6 @@ serve(async (req) => {
       }
     }
 
-    const GEMINI_API_KEY = Deno.env.get("Gemini_API_KEY");
-    if (!GEMINI_API_KEY) throw new Error("Gemini_API_KEY is not configured");
-
     const lang = language === "es" ? "español" : "português brasileiro";
 
     const canvasText = Object.entries(canvas)
@@ -101,33 +99,14 @@ Retorne APENAS o JSON válido, sem markdown code blocks.`;
 
     const userPrompt = `Título do Desafio: ${title}\n\nCanvas:\n${canvasText}`;
 
-    const response = await fetch(
-      `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${GEMINI_API_KEY}`,
-      {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          contents: [
-            { role: "user", parts: [{ text: systemPrompt + "\n\n" + userPrompt }] },
-          ],
-        }),
-      }
-    );
-
-    if (!response.ok) {
-      const status = response.status;
-      if (status === 429) {
-        return new Response(JSON.stringify({ error: "Rate limit exceeded." }), {
-          status: 429, headers: { ...corsHeaders, "Content-Type": "application/json" },
-        });
-      }
-      const t = await response.text();
-      console.error("Gemini error:", status, t);
-      throw new Error("Gemini API error");
+    const result = await callClaude({ system: systemPrompt, user: userPrompt, stream: false });
+    if (!result.response) {
+      return new Response(JSON.stringify({ error: result.error, fallback: true }), {
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
     }
-
-    const data = await response.json();
-    const content = data.candidates?.[0]?.content?.parts?.[0]?.text || "";
+    const data = await result.response.json();
+    const content = (data.content ?? []).filter((b: any) => b.type === "text").map((b: any) => b.text).join("") || "";
 
     let evaluation;
     try {
