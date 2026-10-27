@@ -14,6 +14,30 @@ export type Database = {
   }
   public: {
     Tables: {
+      api_model_prices: {
+        Row: {
+          input_per_mtok: number
+          model: string
+          output_per_mtok: number
+          per_image: number
+          updated_at: string
+        }
+        Insert: {
+          input_per_mtok?: number
+          model: string
+          output_per_mtok?: number
+          per_image?: number
+          updated_at?: string
+        }
+        Update: {
+          input_per_mtok?: number
+          model?: string
+          output_per_mtok?: number
+          per_image?: number
+          updated_at?: string
+        }
+        Relationships: []
+      }
       api_usage_logs: {
         Row: {
           created_at: string
@@ -194,6 +218,22 @@ export type Database = {
           status_filter?: string
         }
         Returns: Json
+      }
+      api_usage_by_user: {
+        Args: {
+          operation_filter?: string
+          provider_filter?: string
+          since_at: string
+          status_filter?: string
+        }
+        Returns: Json
+      }
+      api_user_emails: {
+        Args: { user_ids: string[] }
+        Returns: {
+          email: string
+          user_id: string
+        }[]
       }
       find_user_by_email: {
         Args: { lookup_email: string }
