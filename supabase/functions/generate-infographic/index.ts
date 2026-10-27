@@ -1,5 +1,6 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
+import { monitoredFetch, recordApiUsage } from '../_shared/api-monitoring.ts';
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -106,7 +107,10 @@ serve(async (req) => {
     }
 
     const GEMINI_API_KEY = Deno.env.get("Gemini_API_KEY");
-    if (!GEMINI_API_KEY) throw new Error("Gemini_API_KEY is not configured");
+    if (!GEMINI_API_KEY) {
+      await recordApiUsage({ userId, provider: 'gemini', operation: 'generate-infographic', model: 'gemini-3-pro-image-preview' }, { success: false, duration_ms: 0, error_code: 'missing_key', error_message: 'Chave não configurada / Clave no configurada' });
+      throw new Error("Gemini_API_KEY is not configured");
+    }
 
     const lang = language === "es" ? "español" : "português brasileiro";
 
@@ -132,7 +136,8 @@ ${canvasText}
 
 Gere a imagem como um infográfico profissional no estilo editorial ilustrado.`;
 
-    const response = await fetch(
+    const response = await monitoredFetch(
+      { userId, provider: 'gemini', operation: 'generate-infographic', model: 'gemini-3-pro-image-preview' },
       `https://generativelanguage.googleapis.com/v1beta/models/gemini-3-pro-image-preview:generateContent?key=${GEMINI_API_KEY}`,
       {
         method: "POST",
@@ -148,8 +153,7 @@ Gere a imagem como um infográfico profissional no estilo editorial ilustrado.`;
 
     if (!response.ok) {
       const status = response.status;
-      const t = await response.text().catch(() => "");
-      console.error("Gemini image error:", status, t);
+      console.error("Gemini image error:", status);
       const msg = status === 429
         ? "O serviço de geração de imagens está temporariamente sobrecarregado. Tente novamente em alguns instantes."
         : "Não foi possível gerar o infográfico no momento.";
