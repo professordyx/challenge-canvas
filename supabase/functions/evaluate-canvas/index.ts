@@ -99,7 +99,7 @@ Retorne APENAS o JSON válido, sem markdown code blocks.`;
 
     const userPrompt = `Título do Desafio: ${title}\n\nCanvas:\n${canvasText}`;
 
-    const result = await callClaude({ system: systemPrompt, user: userPrompt, stream: false });
+    const result = await callClaude({ system: systemPrompt, user: userPrompt, stream: false, userId: userData.user.id, operation: 'evaluate-canvas' });
     if (!result.response) {
       return new Response(JSON.stringify({ error: result.error, fallback: true }), {
         headers: { ...corsHeaders, "Content-Type": "application/json" },

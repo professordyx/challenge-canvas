@@ -14,6 +14,54 @@ export type Database = {
   }
   public: {
     Tables: {
+      api_usage_logs: {
+        Row: {
+          created_at: string
+          duration_ms: number
+          error_code: string | null
+          error_message: string | null
+          http_status: number | null
+          id: string
+          input_tokens: number | null
+          model: string
+          operation: string
+          output_tokens: number | null
+          provider: string
+          success: boolean
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          duration_ms?: number
+          error_code?: string | null
+          error_message?: string | null
+          http_status?: number | null
+          id?: string
+          input_tokens?: number | null
+          model: string
+          operation: string
+          output_tokens?: number | null
+          provider: string
+          success: boolean
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          duration_ms?: number
+          error_code?: string | null
+          error_message?: string | null
+          http_status?: number | null
+          id?: string
+          input_tokens?: number | null
+          model?: string
+          operation?: string
+          output_tokens?: number | null
+          provider?: string
+          success?: boolean
+          user_id?: string
+        }
+        Relationships: []
+      }
       challenge_shares: {
         Row: {
           challenge_id: string
@@ -115,11 +163,38 @@ export type Database = {
         }
         Relationships: []
       }
+      user_roles: {
+        Row: {
+          id: string
+          role: Database["public"]["Enums"]["app_role"]
+          user_id: string
+        }
+        Insert: {
+          id?: string
+          role: Database["public"]["Enums"]["app_role"]
+          user_id: string
+        }
+        Update: {
+          id?: string
+          role?: Database["public"]["Enums"]["app_role"]
+          user_id?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
     }
     Functions: {
+      api_monitoring_summary: {
+        Args: {
+          operation_filter?: string
+          provider_filter?: string
+          since_at: string
+          status_filter?: string
+        }
+        Returns: Json
+      }
       find_user_by_email: {
         Args: { lookup_email: string }
         Returns: {
@@ -128,9 +203,16 @@ export type Database = {
           user_id: string
         }[]
       }
+      has_role: {
+        Args: {
+          _role: Database["public"]["Enums"]["app_role"]
+          _user_id: string
+        }
+        Returns: boolean
+      }
     }
     Enums: {
-      [_ in never]: never
+      app_role: "admin" | "user"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -257,6 +339,8 @@ export type CompositeTypes<
 
 export const Constants = {
   public: {
-    Enums: {},
+    Enums: {
+      app_role: ["admin", "user"],
+    },
   },
 } as const

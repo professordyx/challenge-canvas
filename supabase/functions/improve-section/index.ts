@@ -15,8 +15,6 @@ const corsHeaders = {
 
 const aiUnavailableMessage =
   "O serviço de IA está temporariamente sobrecarregado. Tente novamente em alguns instantes.";
-const aiCreditsExhaustedMessage =
-  "Os créditos da chave Gemini foram esgotados. Acesse https://ai.studio/projects para recarregar ou atualize a chave Gemini_API_KEY nas configurações do projeto. / Los créditos de Gemini se agotaron: recarga en https://ai.studio/projects o actualiza la clave Gemini_API_KEY.";
 
 const jsonResponse = (body: Record<string, unknown>) =>
   new Response(JSON.stringify(body), {
@@ -72,20 +70,21 @@ serve(async (req) => {
     const systemPrompt = "Você é um consultor especialista em problem framing e inovação estratégica. Seu trabalho é melhorar textos de seções de um Challenge Canvas, tornando-os mais claros, completos, estratégicos e acionáveis. Responda sempre em " + lang + ". Retorne APENAS o texto melhorado, sem explicações adicionais. IMPORTANTE: NÃO use formatação Markdown (sem cerquilha, asteriscos, travessões, blocos de código, etc). Retorne texto puro com quebras de linha simples para separar parágrafos.";
     const userPrompt = `Melhore o seguinte texto da seção "${sectionLabel}" de um Challenge Canvas:\n\n"${currentText}"\n\nRetorne apenas o texto melhorado, mais completo e estratégico.`;
 
-    const result = await callClaude({ system: systemPrompt, user: userPrompt, stream: true });
+    const result = await callClaude({ system: systemPrompt, user: userPrompt, stream: true, userId: userData.user.id, operation: 'improve-section' });
     if (!result.response) {
       return jsonResponse({ error: result.error ?? aiUnavailableMessage, fallback: true });
     }
     const response = result.response;
 
-    // Transform Gemini SSE format to OpenAI-compatible SSE format for the frontend
+    if (!response.body) return jsonResponse({ error: aiUnavailableMessage, fallback: true });
+    const reader = response.body.getReader();
+    // Transform Anthropic SSE format to the frontend's streaming format
     const { readable, writable } = new TransformStream();
     const writer = writable.getWriter();
     const encoder = new TextEncoder();
 
     (async () => {
       try {
-        const reader = response.body!.getReader();
         const decoder = new TextDecoder();
         let buffer = "";
 
