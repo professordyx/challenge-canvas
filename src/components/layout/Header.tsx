@@ -2,12 +2,15 @@ import { Link, useLocation } from "react-router-dom";
 import { useLanguage } from "@/i18n/LanguageContext";
 import { useAuth } from "@/hooks/useAuth";
 import { Button } from "@/components/ui/button";
-import { LayoutDashboard, Globe, LogOut } from "lucide-react";
+import { LayoutDashboard, Globe, LogOut, ShieldCheck } from "lucide-react";
+import { useAdmin } from '@/hooks/useAdmin';
+import { adminCopy } from '@/i18n/admin';
 import logo from "@/assets/logo-diocelio.png";
 
 const Header = () => {
   const { language, setLanguage, t } = useLanguage();
   const { user, signOut } = useAuth();
+  const { isAdmin } = useAdmin();
   const location = useLocation();
   const isLanding = location.pathname === "/";
 
@@ -22,6 +25,7 @@ const Header = () => {
         </Link>
 
         <div className="flex items-center gap-2">
+          {isAdmin && <Link to="/admin"><Button variant="ghost" size="sm" className="gap-2" aria-label={adminCopy[language].admin}><ShieldCheck className="h-4 w-4" /><span className="hidden sm:inline">{adminCopy[language].admin}</span></Button></Link>}
           {user && (
             <Link to="/dashboard">
               <Button variant="ghost" size="sm" className="gap-2">
