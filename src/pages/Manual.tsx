@@ -6,7 +6,7 @@ import { useNavigate } from "react-router-dom";
 import Footer from "@/components/layout/Footer";
 import logo from "@/assets/logo-diocelio.png";
 import type { Language } from "@/i18n/translations";
-import { enContent } from "./manual/enContent";
+import { enContent } from "@/pages/manual/enContent";
 
 export interface ManualContent {
   title: string;
