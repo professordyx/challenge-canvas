@@ -146,6 +146,76 @@ considerando [restricción clave]?`,
     ],
     cta: "Estructurar mi desafío en el Challenge Canvas",
   },
+  en: {
+    title: "Problem Statement Template",
+    description:
+      "A practical guide with a template and examples for writing effective problem statements using the Challenge Canvas 'How Might We' format.",
+    h1: "Problem Statement Template: a practical guide with examples",
+    intro:
+      "A good problem statement is the foundation of any innovation project. It aligns teams, focuses resources and opens space for creative solutions. This guide presents a tested template, based on problem framing and the 'How Might We' format used in the Challenge Canvas.",
+    sections: [
+      {
+        h: "What is a problem statement?",
+        body: "A problem statement is a short, specific sentence that describes the gap between the current state and the desired state. It answers who is affected, what is happening, where, when and why it matters — without proposing a solution. When well written, it keeps teams from jumping to solutions before understanding the problem.",
+      },
+      {
+        h: "The 5 elements of a good problem statement",
+        list: [
+          "Who: the users, customers or stakeholders affected.",
+          "What: the observable, measurable symptom.",
+          "Where / When: the context in which the problem occurs.",
+          "Why: the impact on the business, the user or society.",
+          "Constraints: budget, time, regulatory or technology limits.",
+        ],
+      },
+      {
+        h: "Problem Statement Template",
+        body: "Use this template as a starting point. Fill in each field with short, specific phrases.",
+        code: `[Audience / user] faces [observable problem]
+when [context / moment],
+which results in [measurable impact].
+Constraints: [budget, deadline, technology, regulation].
+Success will be achieved when [measurable criterion].`,
+      },
+      {
+        h: "Problem Framing Template (How Might We)",
+        body: "After describing the problem, reframe it as an open question using the 'How Might We' (HMW) format. This invites exploration of solutions without prescribing an answer.",
+        code: `How might we [action verb + desired outcome]
+for [target audience]
+considering [key constraint]?`,
+      },
+      {
+        h: "Examples of effective problem statements",
+        examples: [
+          {
+            bad: "We need a new app for customers.",
+            good: "Retail customers abandon their cart in 68% of mobile purchases during checkout, causing an estimated loss of USD 480k/year. Constraints: integration with the current ERP and a 6-month deadline.",
+            hmw: "How might we simplify mobile checkout for retail customers, cutting abandonment by 30%, while keeping the current ERP integration?",
+          },
+          {
+            bad: "The team is unmotivated.",
+            good: "Operations employees report a 22% drop in engagement in quarterly surveys, especially after the 2024 merger, which is raising turnover by 15%. Constraint: compensation policy is already set.",
+            hmw: "How might we reconnect operations employees to the new organization's purpose, reducing turnover by 10% in 12 months?",
+          },
+        ],
+      },
+      {
+        h: "Common mistakes to avoid",
+        list: [
+          "Mixing the problem with a solution ('we need an app...').",
+          "Being too general ('communication is bad').",
+          "Forgetting to quantify the impact.",
+          "Ignoring real budget, time or regulatory constraints.",
+          "Not defining a measurable success criterion.",
+        ],
+      },
+      {
+        h: "Next steps",
+        body: "Use Challenge Canvas Builder to structure your problem in a complete 12-block framework, with AI support to refine each section and generate HMW statements automatically.",
+      },
+    ],
+    cta: "Structure my challenge in Challenge Canvas",
+  },
 };
 
 const ProblemStatementGuide = () => {
