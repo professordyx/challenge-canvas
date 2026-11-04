@@ -58,7 +58,7 @@ const CanvasEditor = () => {
   const navigate = useNavigate();
   const { t, language } = useLanguage();
   const { user } = useAuth();
-  const { challenges, sharedChallenges, updateChallenge } = useChallenges();
+  const { challenges, sharedChallenges, loading: challengesLoading, updateChallenge } = useChallenges();
 
   // Find in own or shared
   const ownChallenge = challenges.find((c) => c.id === id);
@@ -79,8 +79,8 @@ const CanvasEditor = () => {
   const [shareOpen, setShareOpen] = useState(false);
 
   useEffect(() => {
-    if (!challenge) navigate("/dashboard", { replace: true });
-  }, [challenge, navigate]);
+    if (!challengesLoading && !challenge) navigate("/dashboard", { replace: true });
+  }, [challenge, challengesLoading, navigate]);
 
   // Load saved evaluation and infographic
   useEffect(() => {
@@ -241,7 +241,7 @@ const CanvasEditor = () => {
     window.print();
   };
 
-  if (!challenge) return null;
+  if (!challenge) return challengesLoading ? <div className="p-6 text-muted-foreground" role="status">…</div> : null;
 
   const getLevelColor = (level: string) => {
     if (level === "estratégico" || level === "estrategico" || level === "strategic") return "text-green-600";
