@@ -38,7 +38,7 @@ const BrandLogo = ({ variant = "horizontal", className, size = 32 }: BrandLogoPr
   const word = (
     <span
       className={cn("font-display leading-none tracking-tight", variant === "vertical" && "flex flex-col items-center")}
-      style={{ fontSize }}
+      style={{ fontSize, fontFamily: "'Exo 2', system-ui, sans-serif" }}
     >
       <span className="font-bold text-brand-navy">challenge</span>
       {variant === "horizontal" ? " " : null}
