@@ -6,6 +6,14 @@ import { LayoutDashboard, Globe, LogOut, ShieldCheck } from "lucide-react";
 import { useAdmin } from '@/hooks/useAdmin';
 import { adminCopy } from '@/i18n/admin';
 import logo from "@/assets/logo-diocelio.png";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
+import type { Language } from "@/i18n/translations";
+
+const LANGS: { code: Language; label: string }[] = [
+  { code: "pt", label: "Português" },
+  { code: "es", label: "Español" },
+  { code: "en", label: "English" },
+];
 
 const Header = () => {
   const { language, setLanguage, t } = useLanguage();
@@ -35,15 +43,21 @@ const Header = () => {
             </Link>
           )}
 
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={() => setLanguage(language === "pt" ? "es" : "pt")}
-            className="gap-1.5"
-          >
-            <Globe className="h-4 w-4" />
-            {language === "pt" ? "ES" : "PT"}
-          </Button>
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="outline" size="sm" className="gap-1.5" aria-label={t("selectLanguage")}>
+                <Globe className="h-4 w-4" />
+                {language.toUpperCase()}
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end">
+              {LANGS.map((l) => (
+                <DropdownMenuItem key={l.code} onClick={() => setLanguage(l.code)} className={language === l.code ? "font-semibold" : ""}>
+                  {l.label}
+                </DropdownMenuItem>
+              ))}
+            </DropdownMenuContent>
+          </DropdownMenu>
 
           {user ? (
             <Button variant="ghost" size="sm" onClick={signOut} className="gap-1.5">

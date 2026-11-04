@@ -61,7 +61,7 @@ serve(async (req) => {
         status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" },
       });
     }
-    if (language !== "pt" && language !== "es") {
+    if (language !== "pt" && language !== "es" && language !== "en") {
       return new Response(JSON.stringify({ error: "Invalid language" }), {
         status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" },
       });
@@ -74,7 +74,7 @@ serve(async (req) => {
       }
     }
 
-    const lang = language === "es" ? "español" : "português brasileiro";
+    const lang = language === "es" ? "español" : language === "en" ? "English" : "português brasileiro";
 
     const canvasText = Object.entries(canvas)
       .map(([key, value]) => `**${key}**: ${value || "(vazio)"}`)

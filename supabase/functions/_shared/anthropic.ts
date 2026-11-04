@@ -4,12 +4,12 @@ export const CLAUDE_MODELS = ["claude-sonnet-5-5", "claude-sonnet-4-5"];
 
 export const msgs = {
   credits:
-    "Os créditos da API da Anthropic acabaram. Recarregue em console.anthropic.com. / Los créditos de la API de Anthropic se agotaron. Recarga en console.anthropic.com.",
+    "Os créditos da API da Anthropic acabaram. Recarregue em console.anthropic.com. / Los créditos de la API de Anthropic se agotaron. Recarga en console.anthropic.com. / Anthropic API credits ran out. Top up at console.anthropic.com.",
   rate:
-    "Limite de uso da IA atingido. Tente novamente em alguns instantes. / Límite de uso de la IA alcanzado. Inténtalo de nuevo en unos instantes.",
+    "Limite de uso da IA atingido. Tente novamente em alguns instantes. / Límite de uso de la IA alcanzado. Inténtalo de nuevo en unos instantes. / AI usage limit reached. Try again shortly.",
   auth:
-    "A chave da Anthropic é inválida. Atualize a chave anthropic_challenge_canvas. / La clave de Anthropic no es válida. Actualiza la clave anthropic_challenge_canvas.",
-  generic: "Erro no serviço de IA. / Error en el servicio de IA.",
+    "A chave da Anthropic é inválida. Atualize a chave anthropic_challenge_canvas. / La clave de Anthropic no es válida. Actualiza la clave anthropic_challenge_canvas. / The Anthropic key is invalid. Update the anthropic_challenge_canvas key.",
+  generic: "Erro no serviço de IA. / Error en el servicio de IA. / AI service error.",
 };
 
 export async function callClaude(opts: {
