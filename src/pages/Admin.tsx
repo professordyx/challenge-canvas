@@ -28,7 +28,7 @@ export default function Admin() {
   const [priceEdits, setPriceEdits] = useState<Record<string, Partial<ModelPrice>>>({});
   const usd = new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD', minimumFractionDigits: 2, maximumFractionDigits: 4 });
   const since = useMemo(() => new Date(Date.now() - Number(days) * 86400000).toISOString(), [days]);
-  const number = new Intl.NumberFormat(language === 'pt' ? 'pt-BR' : 'es');
+  const number = new Intl.NumberFormat(language === 'pt' ? 'pt-BR' : language === 'en' ? 'en-US' : 'es');
   const operationName = (name: string) => name === 'improve-section' ? c.improve : name === 'evaluate-canvas' ? c.evaluate : c.infographic;
   const query = useQuery({
     queryKey: ['api-monitoring', since, provider, operation, status, page, userId], enabled: access.isAdmin,
@@ -123,7 +123,7 @@ export default function Admin() {
       <section className="border-t pt-6"><h2 className="mb-4 text-xl font-semibold">{c.history}</h2>
         <Table><TableHeader><TableRow>{[c.date, c.email, c.operation, c.model, c.status, c.duration, c.tokens, c.detail].map(label => <TableHead key={label}>{label}</TableHead>)}</TableRow></TableHeader>
           <TableBody>{query.data?.rows.map(row => <TableRow key={row.id}>
-            <TableCell className="whitespace-nowrap text-xs">{new Date(row.created_at).toLocaleString(language === 'pt' ? 'pt-BR' : 'es')}</TableCell>
+            <TableCell className="whitespace-nowrap text-xs">{new Date(row.created_at).toLocaleString(language === 'pt' ? 'pt-BR' : language === 'en' ? 'en-US' : 'es')}</TableCell>
             <TableCell className="break-all text-xs">{query.data?.emailMap[row.user_id] ?? row.user_id}</TableCell>
             <TableCell><p className="whitespace-nowrap font-medium">{operationName(row.operation)}</p><p className="mt-1 text-xs text-muted-foreground">{row.provider === 'anthropic' ? 'Anthropic' : 'Gemini'}</p></TableCell>
             <TableCell className="text-xs">{row.model}</TableCell>

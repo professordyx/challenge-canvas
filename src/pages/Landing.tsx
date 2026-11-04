@@ -19,9 +19,9 @@ const Landing = () => {
     <>
       <Helmet>
         <title>Challenge Canvas Builder — Diocélio Goulart</title>
-        <meta name="description" content="Estruture problemas complexos com clareza estratégica. Ferramenta de problem framing para consultores e líderes de inovação." />
+        <meta name="description" content={t("metaHomeDesc")} />
         <meta property="og:title" content="Challenge Canvas Builder — Diocélio Goulart" />
-        <meta property="og:description" content="Estruture problemas complexos com clareza estratégica. Ferramenta de problem framing para consultores e líderes de inovação." />
+        <meta property="og:description" content={t("metaHomeDesc")} />
         <meta property="og:url" content="https://challengecanvas.com/" />
         <meta property="og:image" content="https://challengecanvas.com/og-image.jpg" />
         <link rel="canonical" href="https://challengecanvas.com/" />

@@ -26,6 +26,7 @@ export function useSpeechToText({ language = "pt", onResult, appendMode = true }
   const langMap: Record<string, string> = {
     pt: "pt-BR",
     es: "es-ES",
+    en: "en-US",
   };
 
   const stop = useCallback(() => {

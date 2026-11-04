@@ -249,7 +249,7 @@ const CanvasEditor = () => {
     return "text-destructive";
   };
 
-  const currentDate = new Date().toLocaleDateString(language === "pt" ? "pt-BR" : "es-ES", {
+  const currentDate = new Date().toLocaleDateString(language === "pt" ? "pt-BR" : language === "en" ? "en-US" : "es-ES", {
     year: "numeric",
     month: "long",
     day: "numeric",
@@ -505,7 +505,7 @@ const CanvasEditor = () => {
             <img src={logoImg} alt="Logo" className="pdf-logo" />
             <div>
               <h1 className="pdf-app-name">Challenge Canvas Builder</h1>
-              <p className="pdf-creator">por Diocélio Goulart — dioceliogoulart.com.br</p>
+              <p className="pdf-creator">{t("byAuthor")} Diocélio Goulart — dioceliogoulart.com.br</p>
             </div>
           </div>
           <div className="pdf-header-right">

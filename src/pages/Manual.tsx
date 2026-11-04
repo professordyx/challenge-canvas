@@ -6,8 +6,9 @@ import { useNavigate } from "react-router-dom";
 import Footer from "@/components/layout/Footer";
 import logo from "@/assets/logo-diocelio.png";
 import type { Language } from "@/i18n/translations";
+import { enContent } from "./manual/enContent";
 
-interface ManualContent {
+export interface ManualContent {
   title: string;
   intro: string;
   sections: { heading: string; content: React.ReactNode }[];
@@ -15,6 +16,7 @@ interface ManualContent {
 
 const getContent = (lang: Language): ManualContent => {
   if (lang === "es") return esContent;
+  if (lang === "en") return enContent;
   return ptContent;
 };
 
@@ -486,7 +488,7 @@ const Manual = () => {
           {/* References */}
           <section className="mb-10 rounded-lg border border-border bg-muted/30 p-6">
             <h2 className="mb-4 text-2xl font-bold text-foreground">
-              {language === "es" ? "Referencias (APA 7)" : "Referências (APA 7)"}
+              {t("referencesTitle")}
             </h2>
             <ul className="list-none space-y-3 pl-0 text-sm text-foreground/80">
               {references.map((ref, i) => (
