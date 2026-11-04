@@ -14,10 +14,15 @@ export default {
     },
     extend: {
       fontFamily: {
-        sans: ["Rubik", "system-ui", "sans-serif"],
-        display: ["Archivo", "system-ui", "sans-serif"],
+        sans: ["Inter", "system-ui", "sans-serif"],
+        display: ["Exo 2", "system-ui", "sans-serif"],
       },
       colors: {
+        brand: {
+          navy: "hsl(var(--brand-navy))",
+          teal: "hsl(var(--brand-teal))",
+          "teal-100": "hsl(var(--brand-teal-100))",
+        },
         border: "hsl(var(--border))",
         input: "hsl(var(--input))",
         ring: "hsl(var(--ring))",
