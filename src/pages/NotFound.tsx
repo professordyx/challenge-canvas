@@ -14,9 +14,9 @@ const NotFound = () => {
   return (
     <>
       <Helmet>
-        <title>404 | Challenge Canvas Builder</title>
+        <title>404 | Challenge Canvas</title>
         <meta name="description" content={t("metaNotFoundDesc")} />
-        <meta property="og:title" content="404 | Challenge Canvas Builder" />
+        <meta property="og:title" content="404 | Challenge Canvas" />
         <meta property="og:description" content={t("metaNotFoundDesc")} />
         <meta property="og:url" content="https://challengecanvas.com/404" />
         <meta property="og:image" content="https://challengecanvas.com/og-image.jpg" />

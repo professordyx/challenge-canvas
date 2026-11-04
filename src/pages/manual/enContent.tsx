@@ -8,7 +8,7 @@ const h3 = "mb-3 text-xl font-semibold text-foreground";
 export const enContent: ManualContent = {
   title: "Challenge Canvas Manual",
   intro:
-    "This manual presents the theory and practice of the Challenge Canvas – a strategic management tool used to diagnose complex problems and structure organizational challenges collaboratively. Here we describe the conceptual foundations (design thinking, problem framing, wicked problems, open innovation) and detail the practical use of the Canvas, including how the Challenge Canvas Builder app works. All content is grounded in academic references (APA 7) to ensure scientific rigor.",
+    "This manual presents the theory and practice of the Challenge Canvas – a strategic management tool used to diagnose complex problems and structure organizational challenges collaboratively. Here we describe the conceptual foundations (design thinking, problem framing, wicked problems, open innovation) and detail the practical use of the Canvas, including how the Challenge Canvas app works. All content is grounded in academic references (APA 7) to ensure scientific rigor.",
   sections: [
     {
       heading: "Complex Challenges and Design Thinking",
@@ -115,11 +115,11 @@ export const enContent: ManualContent = {
       ),
     },
     {
-      heading: "How Challenge Canvas Builder Works (App)",
+      heading: "How Challenge Canvas Works (App)",
       content: (
         <>
           <p className={p}>
-            Challenge Canvas Builder is a digital product designed to support exactly this challenge-building process. It is a responsive web app (desktop and tablet) that implements every element of the Canvas, adding artificial intelligence and collaboration tools. Here are the main components and how to use them:
+            Challenge Canvas is a digital product designed to support exactly this challenge-building process. It is a responsive web app (desktop and tablet) that implements every element of the Canvas, adding artificial intelligence and collaboration tools. Here are the main components and how to use them:
           </p>
           <ul className="mb-6 list-disc space-y-3 pl-6 text-foreground/90">
             <li><strong>Sign-in and Dashboard:</strong> Users create an account (email/password or Google) and access a dashboard with their projects. Each challenge appears as a card with title, date and status (draft, in progress, completed). You can create, edit, duplicate or delete challenges.</li>
@@ -176,7 +176,7 @@ export const enContent: ManualContent = {
             <li><strong>Deliverables:</strong> Working prototype of the checkout flow, BI report clustering high-churn customers, automated communication plan (email/WhatsApp) scheduled for a 3-month test.</li>
           </ol>
           <p className={pLast}>
-            This illustrative example shows how the Canvas helps focus on the problem (poor checkout design, logistics) and avoids assuming the exact solution from the start. In Challenge Canvas Builder, each step above would be recorded in its own field, with AI help to refine the problem statement and suggest metrics.
+            This illustrative example shows how the Canvas helps focus on the problem (poor checkout design, logistics) and avoids assuming the exact solution from the start. In Challenge Canvas, each step above would be recorded in its own field, with AI help to refine the problem statement and suggest metrics.
           </p>
         </>
       ),
@@ -189,7 +189,7 @@ export const enContent: ManualContent = {
             <li>Different points of view ensure the problem is well understood.</li>
             <li>Use the Canvas to resist the urge to "rush to the solution". Adaptive challenges require iterative reflection.</li>
             <li>Set clear goals, but leave room for creativity in the solution. The "How might we…" format helps with this.</li>
-            <li>Challenge Canvas Builder boosts productivity, but the value comes from collective thinking and strategic alignment. AI is a co-pilot to clarify and critique, not a substitute for judgment.</li>
+            <li>Challenge Canvas boosts productivity, but the value comes from collective thinking and strategic alignment. AI is a co-pilot to clarify and critique, not a substitute for judgment.</li>
             <li>Even if the final solution changes or fails, documenting hypotheses and results (in the Canvas or the app) builds organizational knowledge.</li>
           </ul>
           <p className={pLast}>

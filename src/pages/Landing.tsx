@@ -18,9 +18,9 @@ const Landing = () => {
   return (
     <>
       <Helmet>
-        <title>Challenge Canvas Builder — Diocélio Goulart</title>
+        <title>challenge canvas — Diocélio Goulart</title>
         <meta name="description" content={t("metaHomeDesc")} />
-        <meta property="og:title" content="Challenge Canvas Builder — Diocélio Goulart" />
+        <meta property="og:title" content="challenge canvas — Diocélio Goulart" />
         <meta property="og:description" content={t("metaHomeDesc")} />
         <meta property="og:url" content="https://challengecanvas.com/" />
         <meta property="og:image" content="https://challengecanvas.com/og-image.jpg" />
