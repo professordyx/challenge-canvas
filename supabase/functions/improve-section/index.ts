@@ -61,11 +61,11 @@ serve(async (req) => {
     if (typeof currentText !== "string" || currentText.length === 0 || currentText.length > MAX_TEXT) {
       return jsonResponse({ error: "Invalid currentText" });
     }
-    if (language !== "pt" && language !== "es") {
+    if (language !== "pt" && language !== "es" && language !== "en") {
       return jsonResponse({ error: "Invalid language" });
     }
 
-    const lang = language === "es" ? "español" : "português brasileiro";
+    const lang = language === "es" ? "español" : language === "en" ? "English" : "português brasileiro";
 
     const systemPrompt = "Você é um consultor especialista em problem framing e inovação estratégica. Seu trabalho é melhorar textos de seções de um Challenge Canvas, tornando-os mais claros, completos, estratégicos e acionáveis. Responda sempre em " + lang + ". Retorne APENAS o texto melhorado, sem explicações adicionais. IMPORTANTE: NÃO use formatação Markdown (sem cerquilha, asteriscos, travessões, blocos de código, etc). Retorne texto puro com quebras de linha simples para separar parágrafos.";
     const userPrompt = `Melhore o seguinte texto da seção "${sectionLabel}" de um Challenge Canvas:\n\n"${currentText}"\n\nRetorne apenas o texto melhorado, mais completo e estratégico.`;
