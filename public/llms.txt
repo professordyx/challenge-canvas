@@ -1,8 +1,8 @@
-# Challenge Canvas Builder
+# Challenge Canvas
 
-> Estruture problemas complexos com clareza estratégica. O Challenge Canvas Builder ajuda consultores, líderes de inovação e equipes de negócios a diagnosticar e estruturar desafios organizacionais com apoio de IA.
+> Estruture problemas complexos com clareza estratégica. O Challenge Canvas ajuda consultores, líderes de inovação e equipes de negócios a diagnosticar e estruturar desafios organizacionais com apoio de IA.
 
-Challenge Canvas Builder é uma ferramenta bilíngue (português e espanhol) que oferece um framework de 12 seções para estruturar desafios organizacionais de forma clara e estratégica. Inclui assistente de IA para reformular problemas, gerar declarações de desafio e identificar lacunas, além de exportação em PDF profissional.
+Challenge Canvas é uma ferramenta bilíngue (português e espanhol) que oferece um framework de 12 seções para estruturar desafios organizacionais de forma clara e estratégica. Inclui assistente de IA para reformular problemas, gerar declarações de desafio e identificar lacunas, além de exportação em PDF profissional.
 
 ## Pages
 

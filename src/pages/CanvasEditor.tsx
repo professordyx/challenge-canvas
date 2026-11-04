@@ -30,7 +30,7 @@ import { useToast } from "@/hooks/use-toast";
 import Footer from "@/components/layout/Footer";
 import { MicButton } from "@/components/MicButton";
 import { ShareDialog } from "@/components/ShareDialog";
-import logoImg from "@/assets/logo-diocelio.png";
+import { BrandSymbol } from "@/components/BrandLogo";
 
 interface SectionConfig {
   key: keyof CanvasFields;
@@ -258,9 +258,9 @@ const CanvasEditor = () => {
   return (
     <>
       <Helmet>
-        <title>{challenge.title ? `${challenge.title} | Challenge Canvas Builder` : t("metaDashboardTitle")}</title>
+        <title>{challenge.title ? `${challenge.title} | Challenge Canvas` : t("metaDashboardTitle")}</title>
         <meta name="description" content={t("metaCanvasDesc")} />
-        <meta property="og:title" content={challenge.title ? `${challenge.title} | Challenge Canvas Builder` : t("metaDashboardTitle")} />
+        <meta property="og:title" content={challenge.title ? `${challenge.title} | Challenge Canvas` : t("metaDashboardTitle")} />
         <meta property="og:description" content={t("metaCanvasDesc")} />
         <meta property="og:url" content={`https://challengecanvas.com/canvas/${id}`} />
         <meta property="og:image" content="https://challengecanvas.com/og-image.jpg" />
@@ -502,9 +502,9 @@ const CanvasEditor = () => {
         {/* Header */}
         <div className="pdf-header">
           <div className="pdf-header-left">
-            <img src={logoImg} alt="Logo" className="pdf-logo" />
+            <BrandSymbol size={48} className="pdf-logo" />
             <div>
-              <h1 className="pdf-app-name">Challenge Canvas Builder</h1>
+              <h1 className="pdf-app-name"><b>challenge</b> <span className="pdf-app-name-canvas">canvas</span></h1>
               <p className="pdf-creator">{t("byAuthor")} Diocélio Goulart — dioceliogoulart.com.br</p>
             </div>
           </div>
@@ -580,7 +580,7 @@ const CanvasEditor = () => {
         <div className="pdf-footer">
           <hr className="pdf-divider" />
           <div className="pdf-footer-content">
-            <span>Challenge Canvas Builder — {t("developedBy")} Diocélio Goulart</span>
+            <span>Challenge Canvas — {t("developedBy")} Diocélio Goulart</span>
             <span>© {new Date().getFullYear()} — dioceliogoulart.com.br</span>
           </div>
         </div>

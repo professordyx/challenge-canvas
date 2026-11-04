@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { LayoutDashboard, Globe, LogOut, ShieldCheck } from "lucide-react";
 import { useAdmin } from '@/hooks/useAdmin';
 import { adminCopy } from '@/i18n/admin';
-import logo from "@/assets/logo-diocelio.png";
+import BrandLogo from "@/components/BrandLogo";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import type { Language } from "@/i18n/translations";
 
@@ -26,10 +26,8 @@ const Header = () => {
     <header className="sticky top-0 z-50 border-b border-border bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
       <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-4 sm:px-6">
         <Link to="/" className="flex items-center gap-2">
-          <img src={logo} alt="Diocélio Goulart" className="h-10" />
-          <span className="hidden text-lg font-semibold text-foreground sm:inline">
-            Challenge Canvas
-          </span>
+          <BrandLogo size={30} className="hidden sm:inline-flex" />
+          <BrandLogo variant="symbol" size={30} className="sm:hidden" />
         </Link>
 
         <div className="flex items-center gap-2">

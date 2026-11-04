@@ -164,8 +164,14 @@
   .pdf-app-name {
     font-size: 16pt;
     font-weight: 700;
-    color: hsl(211 42% 28%);
+    color: hsl(212 42% 27%);
+    font-family: 'Exo 2', system-ui, sans-serif;
+    font-weight: 400;
     margin: 0;
+  }
+  .pdf-app-name b { font-weight: 700; }
+  .pdf-app-name-canvas {
+    color: hsl(173 44% 30%);
     line-height: 1.2;
   }
 

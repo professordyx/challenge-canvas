@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { ArrowLeft } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import Footer from "@/components/layout/Footer";
-import logo from "@/assets/logo-diocelio.png";
+import BrandLogo from "@/components/BrandLogo";
 import type { Language } from "@/i18n/translations";
 import { enContent } from "@/pages/manual/enContent";
 
@@ -23,7 +23,7 @@ const getContent = (lang: Language): ManualContent => {
 const ptContent: ManualContent = {
   title: "Manual do Challenge Canvas",
   intro:
-    "Este manual apresenta a teoria e a prática do Challenge Canvas – uma ferramenta de gestão estratégica usada para diagnosticar problemas complexos e estruturar desafios organizacionais de forma colaborativa. Aqui descrevemos os fundamentos conceituais (pensamento de design, problem framing, wicked problems, inovação aberta) e detalhamos o uso prático do Canvas, incluindo o funcionamento do aplicativo Challenge Canvas Builder. Todo o conteúdo é fundamentado em referências acadêmicas (APA 7) para garantir rigor científico.",
+    "Este manual apresenta a teoria e a prática do Challenge Canvas – uma ferramenta de gestão estratégica usada para diagnosticar problemas complexos e estruturar desafios organizacionais de forma colaborativa. Aqui descrevemos os fundamentos conceituais (pensamento de design, problem framing, wicked problems, inovação aberta) e detalhamos o uso prático do Canvas, incluindo o funcionamento do aplicativo Challenge Canvas. Todo o conteúdo é fundamentado em referências acadêmicas (APA 7) para garantir rigor científico.",
   sections: [
     {
       heading: "Desafios Complexos e Pensamento de Design",
@@ -130,11 +130,11 @@ const ptContent: ManualContent = {
       ),
     },
     {
-      heading: "Funcionamento do Challenge Canvas Builder (Aplicativo)",
+      heading: "Funcionamento do Challenge Canvas (Aplicativo)",
       content: (
         <>
           <p className="mb-4 leading-relaxed text-foreground/90">
-            O Challenge Canvas Builder é um produto digital desenhado para facilitar exatamente esse processo de elaboração de desafios. Trata-se de um web app responsivo (desktop e tablet) que implementa todos os elementos do Canvas, acrescentando inteligência artificial e ferramentas colaborativas. A seguir, os principais componentes e como usá-los:
+            O Challenge Canvas é um produto digital desenhado para facilitar exatamente esse processo de elaboração de desafios. Trata-se de um web app responsivo (desktop e tablet) que implementa todos os elementos do Canvas, acrescentando inteligência artificial e ferramentas colaborativas. A seguir, os principais componentes e como usá-los:
           </p>
           <ul className="mb-6 list-disc space-y-3 pl-6 text-foreground/90">
             <li><strong>Autenticação e Dashboard:</strong> Usuários criam conta (email/senha) e acessam um painel com seus projetos. Cada desafio aparece como um cartão com título, data e status (rascunho, em andamento, concluído). É possível criar, editar, duplicar ou excluir desafios.</li>
@@ -193,7 +193,7 @@ const ptContent: ManualContent = {
             <li><strong>Entregáveis:</strong> Protótipo funcional de fluxo de checkout, relatório BI com clusterização de clientes de alto churn, plano de comunicação automação (e-mail/WhatsApp) agendada para 3 meses de teste.</li>
           </ol>
           <p className="leading-relaxed text-foreground/90">
-            Este exemplo ilustrativo mostra como o Canvas ajuda a focar no problema (mau design no checkout, logística) e evita pressupor a solução exata de início. No app Challenge Canvas Builder, cada etapa acima seria registrada em seu respectivo campo, com ajuda da IA para refinar o enunciado do problema e sugerir métricas.
+            Este exemplo ilustrativo mostra como o Canvas ajuda a focar no problema (mau design no checkout, logística) e evita pressupor a solução exata de início. No app Challenge Canvas, cada etapa acima seria registrada em seu respectivo campo, com ajuda da IA para refinar o enunciado do problema e sugerir métricas.
           </p>
         </>
       ),
@@ -206,7 +206,7 @@ const ptContent: ManualContent = {
             <li>Diferentes pontos de vista garantem que o problema seja bem compreendido.</li>
             <li>Use o Canvas para lutar contra a tendência de "correr para a solução". Desafios adaptativos exigem reflexão iterativa.</li>
             <li>Formule metas claras, mas deixe espaço para criatividade na solução. O formato "Como poderíamos…" ajuda nisso.</li>
-            <li>O Challenge Canvas Builder aumenta produtividade, mas o valor vem do pensamento coletivo e do alinhamento estratégico. A IA é um co-piloto para clarificar e criticar, não um substituto do julgamento.</li>
+            <li>O Challenge Canvas aumenta produtividade, mas o valor vem do pensamento coletivo e do alinhamento estratégico. A IA é um co-piloto para clarificar e criticar, não um substituto do julgamento.</li>
             <li>Mesmo que a solução final mude ou falhe, documentar hipóteses e resultados (no próprio Canvas ou no app) gera conhecimento organizacional.</li>
           </ul>
           <p className="leading-relaxed text-foreground/90">
@@ -221,7 +221,7 @@ const ptContent: ManualContent = {
 const esContent: ManualContent = {
   title: "Manual del Challenge Canvas",
   intro:
-    "Este manual presenta la teoría y la práctica del Challenge Canvas – una herramienta de gestión estratégica utilizada para diagnosticar problemas complejos y estructurar desafíos organizacionales de forma colaborativa. Aquí describimos los fundamentos conceptuales (pensamiento de diseño, problem framing, wicked problems, innovación abierta) y detallamos el uso práctico del Canvas, incluyendo el funcionamiento de la aplicación Challenge Canvas Builder. Todo el contenido está fundamentado en referencias académicas (APA 7) para garantizar rigor científico.",
+    "Este manual presenta la teoría y la práctica del Challenge Canvas – una herramienta de gestión estratégica utilizada para diagnosticar problemas complejos y estructurar desafíos organizacionales de forma colaborativa. Aquí describimos los fundamentos conceptuales (pensamiento de diseño, problem framing, wicked problems, innovación abierta) y detallamos el uso práctico del Canvas, incluyendo el funcionamiento de la aplicación Challenge Canvas. Todo el contenido está fundamentado en referencias académicas (APA 7) para garantizar rigor científico.",
   sections: [
     {
       heading: "Desafíos Complejos y Pensamiento de Diseño",
@@ -328,11 +328,11 @@ const esContent: ManualContent = {
       ),
     },
     {
-      heading: "Funcionamiento del Challenge Canvas Builder (Aplicación)",
+      heading: "Funcionamiento del Challenge Canvas (Aplicación)",
       content: (
         <>
           <p className="mb-4 leading-relaxed text-foreground/90">
-            El Challenge Canvas Builder es un producto digital diseñado para facilitar exactamente este proceso de elaboración de desafíos. Se trata de una web app responsiva (escritorio y tablet) que implementa todos los elementos del Canvas, agregando inteligencia artificial y herramientas colaborativas. A continuación, los principales componentes y cómo usarlos:
+            El Challenge Canvas es un producto digital diseñado para facilitar exactamente este proceso de elaboración de desafíos. Se trata de una web app responsiva (escritorio y tablet) que implementa todos los elementos del Canvas, agregando inteligencia artificial y herramientas colaborativas. A continuación, los principales componentes y cómo usarlos:
           </p>
           <ul className="mb-6 list-disc space-y-3 pl-6 text-foreground/90">
             <li><strong>Autenticación y Dashboard:</strong> Los usuarios crean cuenta (email/contraseña) y acceden a un panel con sus proyectos. Cada desafío aparece como una tarjeta con título, fecha y estado (borrador, en desarrollo, finalizado). Es posible crear, editar, duplicar o eliminar desafíos.</li>
@@ -404,7 +404,7 @@ const esContent: ManualContent = {
             <li>Diferentes puntos de vista garantizan que el problema sea bien comprendido.</li>
             <li>Use el Canvas para luchar contra la tendencia de "correr hacia la solución". Desafíos adaptativos exigen reflexión iterativa.</li>
             <li>Formule metas claras, pero deje espacio para creatividad en la solución. El formato "¿Cómo podríamos…?" ayuda en eso.</li>
-            <li>El Challenge Canvas Builder aumenta la productividad, pero el valor viene del pensamiento colectivo y la alineación estratégica. La IA es un copiloto para clarificar y criticar, no un sustituto del juicio.</li>
+            <li>El Challenge Canvas aumenta la productividad, pero el valor viene del pensamiento colectivo y la alineación estratégica. La IA es un copiloto para clarificar y criticar, no un sustituto del juicio.</li>
             <li>Aunque la solución final cambie o falle, documentar hipótesis y resultados (en el propio Canvas o en la app) genera conocimiento organizacional.</li>
           </ul>
           <p className="leading-relaxed text-foreground/90">
@@ -457,7 +457,7 @@ const Manual = () => {
         <article className="prose prose-slate dark:prose-invert max-w-none">
           {/* Header */}
           <div className="mb-10 flex items-center gap-4 border-b border-border pb-6">
-            <img src={logo} alt="Diocélio Goulart" className="h-14" />
+            <BrandLogo variant="symbol" size={52} />
             <div>
               <h1 className="mb-1 text-3xl font-bold text-foreground sm:text-4xl">
                 {content.title}
@@ -499,7 +499,7 @@ const Manual = () => {
 
           {/* Footer credits */}
           <div className="border-t border-border pt-6 text-center text-sm text-muted-foreground">
-            <p>Challenge Canvas Builder · dioceliogoulart.com.br</p>
+            <p>Challenge Canvas · dioceliogoulart.com.br</p>
           </div>
         </article>
       </div>

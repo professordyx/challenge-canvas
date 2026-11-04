@@ -92,7 +92,7 @@ export default function Admin() {
   ];
   const max = Math.max(1, ...(summary?.daily.map(item => item.requests) ?? []));
   return <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6">
-    <Helmet><title>{c.title} | Challenge Canvas Builder</title><meta name="robots" content="noindex,nofollow" /></Helmet>
+    <Helmet><title>{c.title} | Challenge Canvas</title><meta name="robots" content="noindex,nofollow" /></Helmet>
     <div className="mb-8 flex flex-wrap items-start justify-between gap-4">
       <div><p className="mb-2 flex items-center gap-2 text-sm font-medium text-accent"><ShieldCheck className="h-4 w-4" />{c.admin}</p>
         <h1 className="text-3xl font-bold">{c.title}</h1><p className="mt-2 text-muted-foreground">{c.subtitle}</p></div>

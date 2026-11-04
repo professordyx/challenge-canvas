@@ -10,7 +10,7 @@ import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
 import { Mail, Lock, User, Loader2 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
-import logo from "@/assets/logo-diocelio.png";
+import BrandLogo from "@/components/BrandLogo";
 
 const Auth = () => {
   const { user, loading, signUp, signIn, signInWithGoogle } = useAuth();
@@ -63,9 +63,9 @@ const Auth = () => {
   return (
     <>
       <Helmet>
-        <title>{isSignUp ? t("createAccount") + " | Challenge Canvas Builder" : t("metaAuthTitle")}</title>
+        <title>{isSignUp ? t("createAccount") + " | Challenge Canvas" : t("metaAuthTitle")}</title>
         <meta name="description" content={t("metaAuthDesc")} />
-        <meta property="og:title" content={isSignUp ? t("createAccount") + " | Challenge Canvas Builder" : t("metaAuthTitle")} />
+        <meta property="og:title" content={isSignUp ? t("createAccount") + " | Challenge Canvas" : t("metaAuthTitle")} />
         <meta property="og:description" content={t("metaAuthDesc")} />
         <meta property="og:url" content="https://challengecanvas.com/auth" />
         <meta property="og:image" content="https://challengecanvas.com/og-image.jpg" />
@@ -78,7 +78,7 @@ const Auth = () => {
         className="w-full max-w-md rounded-2xl border border-border bg-card p-8 shadow-lg"
       >
         <div className="mb-6 flex flex-col items-center">
-          <img src={logo} alt="Challenge Canvas Builder" className="mb-4 h-12" />
+          <BrandLogo variant="vertical" size={44} className="mb-4" />
           <h1 className="text-2xl font-bold text-card-foreground">
             {isSignUp ? t("createAccount") : t("signIn")}
           </h1>
