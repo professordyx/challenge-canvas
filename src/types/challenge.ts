@@ -33,6 +33,7 @@ export interface Challenge {
   canvas: CanvasFields;
   evaluation: Evaluation | null;
   infographic_url: string | null;
+  interview_transcript: string | null;
 }
 
 export const emptyCanvas: CanvasFields = {

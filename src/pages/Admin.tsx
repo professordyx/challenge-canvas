@@ -29,7 +29,12 @@ export default function Admin() {
   const usd = new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD', minimumFractionDigits: 2, maximumFractionDigits: 4 });
   const since = useMemo(() => new Date(Date.now() - Number(days) * 86400000).toISOString(), [days]);
   const number = new Intl.NumberFormat(language === 'pt' ? 'pt-BR' : language === 'en' ? 'en-US' : 'es');
-  const operationName = (name: string) => name === 'improve-section' ? c.improve : name === 'evaluate-canvas' ? c.evaluate : c.infographic;
+  const operationName = (name: string) =>
+    name === 'improve-section' ? c.improve
+    : name === 'evaluate-canvas' ? c.evaluate
+    : name === 'transcribe-interview' ? c.transcribe
+    : name === 'fill-canvas' ? c.fillCanvas
+    : c.infographic;
   const query = useQuery({
     queryKey: ['api-monitoring', since, provider, operation, status, page, userId], enabled: access.isAdmin,
     refetchInterval: 30_000,
@@ -101,7 +106,7 @@ export default function Admin() {
     <div className="mb-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-5">
       {selector(c.period, days, filter(setDays), [['1', c.day], ['7', c.week], ['30', c.month]])}
       {selector(c.provider, provider, filter(setProvider), [['all', c.all], ['anthropic', 'Anthropic'], ['gemini', 'Gemini']])}
-      {selector(c.operation, operation, filter(setOperation), [['all', c.all], ['improve-section', c.improve], ['evaluate-canvas', c.evaluate], ['generate-infographic', c.infographic]])}
+      {selector(c.operation, operation, filter(setOperation), [['all', c.all], ['improve-section', c.improve], ['evaluate-canvas', c.evaluate], ['generate-infographic', c.infographic], ['transcribe-interview', c.transcribe], ['fill-canvas', c.fillCanvas]])}
       {selector(c.status, status, filter(setStatus), [['all', c.all], ['success', c.success], ['error', c.error]])}
       {selector(c.userFilter, userId, filter(setUserId), [['all', c.all], ...((query.data?.costs.users ?? []).map(u => [u.user_id, u.email ?? u.user_id] as [string, string]))])}
     </div>

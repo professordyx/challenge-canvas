@@ -127,6 +127,7 @@ export type Database = {
           evaluation: Json | null
           id: string
           infographic_url: string | null
+          interview_transcript: string | null
           sections: Json
           status: string
           title: string
@@ -138,6 +139,7 @@ export type Database = {
           evaluation?: Json | null
           id?: string
           infographic_url?: string | null
+          interview_transcript?: string | null
           sections?: Json
           status?: string
           title: string
@@ -149,6 +151,7 @@ export type Database = {
           evaluation?: Json | null
           id?: string
           infographic_url?: string | null
+          interview_transcript?: string | null
           sections?: Json
           status?: string
           title?: string

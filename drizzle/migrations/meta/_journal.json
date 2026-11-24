@@ -22,6 +22,27 @@
       "when": 1793137644459,
       "tag": "0002_api_cost_and_user_email",
       "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "7",
+      "when": 1795556705480,
+      "tag": "0003_add_interview_transcript_to_challenges",
+      "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "7",
+      "when": 1795557324232,
+      "tag": "0004_allow_interview_operations_in_api_usage_logs",
+      "breakpoints": true
+    },
+    {
+      "idx": 5,
+      "version": "7",
+      "when": 1795557343727,
+      "tag": "0005_allow_interview_operations_in_monitoring_summary",
+      "breakpoints": true
     }
   ]
 }

@@ -1,7 +1,12 @@
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
 import { classifyApiError, tokenCount } from './telemetry-data.ts';
 
-type Context = { userId: string; provider: 'anthropic' | 'gemini'; operation: 'improve-section' | 'evaluate-canvas' | 'generate-infographic'; model: string };
+type Context = {
+  userId: string;
+  provider: 'anthropic' | 'gemini';
+  operation: 'improve-section' | 'evaluate-canvas' | 'generate-infographic' | 'transcribe-interview' | 'fill-canvas';
+  model: string;
+};
 type Outcome = { success: boolean; http_status?: number; duration_ms: number; input_tokens?: number | null; output_tokens?: number | null; error_code?: string; error_message?: string };
 
 export async function recordApiUsage(context: Context, outcome: Outcome) {
@@ -34,7 +39,9 @@ export async function monitoredFetch(context: Context, url: string, init: Reques
     let data;
     try { data = await response.clone().json(); } catch { /* recorded as invalid response below */ }
     const valid = context.provider === 'gemini'
-      ? data?.candidates?.some((candidate: any) => candidate.content?.parts?.some((part: any) => part.inlineData?.data))
+      ? (context.operation === 'generate-infographic'
+          ? data?.candidates?.some((candidate: any) => candidate.content?.parts?.some((part: any) => part.inlineData?.data))
+          : data?.candidates?.some((candidate: any) => candidate.content?.parts?.some((part: any) => typeof part.text === 'string' && part.text.trim().length > 0)))
       : data?.content?.some((block: any) => block.type === 'text');
     await recordApiUsage(context, {
       success: Boolean(valid), http_status: response.status, duration_ms: Date.now() - start,

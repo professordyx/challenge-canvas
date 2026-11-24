@@ -31,16 +31,21 @@ const dbToChallenge = (row: any): Challenge => ({
   canvas: { ...emptyCanvas, ...(typeof row.sections === 'object' ? row.sections : {}) },
   evaluation: row.evaluation ?? null,
   infographic_url: row.infographic_url ?? null,
+  interview_transcript: row.interview_transcript ?? null,
 });
 
 export const ChallengesProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const { user } = useAuth();
+  const { user, loading: authLoading } = useAuth();
   const [challenges, setChallenges] = useState<Challenge[]>([]);
   const [sharedChallenges, setSharedChallenges] = useState<SharedChallenge[]>([]);
   const [loading, setLoading] = useState(true);
 
   // Fetch own + shared challenges
   useEffect(() => {
+    if (authLoading) {
+      setLoading(true);
+      return;
+    }
     if (!user) {
       setChallenges([]);
       setSharedChallenges([]);
@@ -91,7 +96,7 @@ export const ChallengesProvider: React.FC<{ children: React.ReactNode }> = ({ ch
     };
 
     fetchAll();
-  }, [user]);
+  }, [user, authLoading]);
 
   const createChallenge = useCallback(async (title: string): Promise<Challenge> => {
     if (!user) throw new Error("Not authenticated");
@@ -122,6 +127,7 @@ export const ChallengesProvider: React.FC<{ children: React.ReactNode }> = ({ ch
     if (updates.canvas !== undefined) dbUpdates.sections = updates.canvas;
     if (updates.evaluation !== undefined) dbUpdates.evaluation = updates.evaluation;
     if (updates.infographic_url !== undefined) dbUpdates.infographic_url = updates.infographic_url;
+    if (updates.interview_transcript !== undefined) dbUpdates.interview_transcript = updates.interview_transcript;
     if (Object.keys(dbUpdates).length > 0) {
       supabase.from("challenges").update(dbUpdates).eq("id", id).then();
     }

@@ -18,7 +18,7 @@ export async function callClaude(opts: {
   stream: boolean;
   maxTokens?: number;
   userId: string;
-  operation: 'improve-section' | 'evaluate-canvas';
+  operation: 'improve-section' | 'evaluate-canvas' | 'fill-canvas';
 }): Promise<{ response?: Response; model?: string; error?: string }> {
   const key = Deno.env.get("anthropic_challenge_canvas");
   if (!key) {

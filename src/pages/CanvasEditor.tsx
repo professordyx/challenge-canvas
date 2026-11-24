@@ -25,11 +25,15 @@ import {
   Download,
   Share2,
   Eye,
+  Mic,
+  X,
 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import Footer from "@/components/layout/Footer";
 import { MicButton } from "@/components/MicButton";
 import { ShareDialog } from "@/components/ShareDialog";
+import { InterviewDialog } from "@/components/InterviewDialog";
+import { isCanvasEmpty } from "@/lib/interview-merge";
 import { BrandSymbol } from "@/components/BrandLogo";
 
 interface SectionConfig {
@@ -77,6 +81,8 @@ const CanvasEditor = () => {
   const [generatingInfographic, setGeneratingInfographic] = useState(false);
   const [infographicUrl, setInfographicUrl] = useState<string | null>(null);
   const [shareOpen, setShareOpen] = useState(false);
+  const [interviewOpen, setInterviewOpen] = useState(false);
+  const [interviewBannerDismissed, setInterviewBannerDismissed] = useState(false);
 
   useEffect(() => {
     if (!challengesLoading && !challenge) navigate("/dashboard", { replace: true });
@@ -271,7 +277,7 @@ const CanvasEditor = () => {
         <div className="mx-auto w-full max-w-6xl flex-1 px-4 py-6 sm:px-6">
           {/* Top Bar */}
           <div className="mb-6 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-            <div className="flex items-center gap-3">
+            <div className="flex min-w-0 flex-1 items-center gap-3">
               <Button variant="ghost" size="icon" onClick={() => navigate("/dashboard")} aria-label={t("backToDashboard")}>
                 <ArrowLeft className="h-5 w-5" />
               </Button>
@@ -307,6 +313,17 @@ const CanvasEditor = () => {
                 >
                   <Share2 className="h-4 w-4" />
                   {t("shareCanvas")}
+                </Button>
+              )}
+              {canEdit && (
+                <Button
+                  variant="outline"
+                  size="sm"
+                  className="gap-1.5"
+                  onClick={() => setInterviewOpen(true)}
+                >
+                  <Mic className="h-4 w-4 text-accent" />
+                  {t("recordInterview")}
                 </Button>
               )}
               <Button
@@ -371,6 +388,34 @@ const CanvasEditor = () => {
             </motion.div>
           )}
 
+          {/* Empty canvas interview prompt */}
+          {canEdit && isCanvasEmpty(challenge.canvas) && !interviewBannerDismissed && (
+            <div className="mb-6 flex flex-col gap-3 rounded-xl border border-accent/30 bg-accent/5 p-4 sm:flex-row sm:items-center sm:justify-between">
+              <div className="flex items-start gap-3">
+                <Mic className="mt-0.5 h-5 w-5 shrink-0 text-accent" />
+                <div>
+                  <h2 className="text-sm font-semibold text-foreground">{t("interviewBannerTitle")}</h2>
+                  <p className="text-xs text-muted-foreground">{t("interviewBannerDesc")}</p>
+                </div>
+              </div>
+              <div className="flex shrink-0 items-center gap-2">
+                <Button size="sm" onClick={() => setInterviewOpen(true)} className="gap-1.5">
+                  <Mic className="h-4 w-4" />
+                  {t("recordInterview")}
+                </Button>
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className="h-8 w-8 text-muted-foreground"
+                  onClick={() => setInterviewBannerDismissed(true)}
+                  aria-label="Close"
+                >
+                  <X className="h-4 w-4" />
+                </Button>
+              </div>
+            </div>
+          )}
+
           {/* Canvas Grid */}
           <div className="grid gap-4 md:grid-cols-2">
             {sections.map((section, i) => {
@@ -383,8 +428,8 @@ const CanvasEditor = () => {
                   transition={{ delay: i * 0.03 }}
                   className="rounded-xl border border-border bg-card p-5 shadow-sm"
                 >
-                  <div className="mb-3 flex items-center justify-between">
-                    <div className="flex items-center gap-2">
+                  <div className="mb-3 flex flex-wrap items-center justify-between gap-2">
+                    <div className="flex min-w-0 items-center gap-2">
                       <h3 className="text-sm font-semibold uppercase tracking-wider text-primary">
                         {i + 1}. {t(section.labelKey)}
                       </h3>
@@ -589,6 +634,21 @@ const CanvasEditor = () => {
       {/* Share Dialog */}
       {isOwner && id && (
         <ShareDialog challengeId={id} open={shareOpen} onOpenChange={setShareOpen} />
+      )}
+
+      {/* Interview Dialog */}
+      {canEdit && id && (
+        <InterviewDialog
+          open={interviewOpen}
+          onOpenChange={setInterviewOpen}
+          challengeId={id}
+          challengeTitle={challenge.title}
+          sections={sections}
+          currentCanvas={challenge.canvas}
+          savedTranscript={challenge.interview_transcript}
+          onSaveTranscript={(transcript) => updateChallenge(id, { interview_transcript: transcript })}
+          onApplyCanvas={(canvas) => updateChallenge(id, { canvas, status: "in_progress" })}
+        />
       )}
     </>
   );
