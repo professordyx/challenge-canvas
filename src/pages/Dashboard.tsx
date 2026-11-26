@@ -37,6 +37,9 @@ import {
   Share2,
   Eye,
   PenLine,
+  AlertCircle,
+  RefreshCw,
+  Loader2,
 } from "lucide-react";
 import Footer from "@/components/layout/Footer";
 
@@ -49,7 +52,16 @@ const statusVariant: Record<ChallengeStatus, "default" | "secondary" | "outline"
 const Dashboard = () => {
   const { t } = useLanguage();
   const navigate = useNavigate();
-  const { challenges, sharedChallenges, createChallenge, duplicateChallenge, deleteChallenge } = useChallenges();
+  const {
+    challenges,
+    sharedChallenges,
+    loading,
+    loadError,
+    reloadChallenges,
+    createChallenge,
+    duplicateChallenge,
+    deleteChallenge,
+  } = useChallenges();
   const [showNew, setShowNew] = useState(false);
   const [newTitle, setNewTitle] = useState("");
   const [deleteId, setDeleteId] = useState<string | null>(null);
@@ -101,7 +113,27 @@ const Dashboard = () => {
           </div>
         </div>
 
-        {challenges.length === 0 ? (
+        {loadError && (
+          <div
+            role="alert"
+            className="mb-6 flex flex-wrap items-center justify-between gap-3 rounded-lg border border-destructive/40 bg-destructive/10 px-4 py-3 text-sm text-destructive"
+          >
+            <div className="flex items-center gap-2">
+              <AlertCircle className="h-4 w-4 shrink-0" />
+              <span>{t("loadChallengesError")}</span>
+            </div>
+            <Button variant="outline" size="sm" onClick={() => void reloadChallenges()} className="gap-1.5">
+              <RefreshCw className="h-3.5 w-3.5" />
+              {t("retrySave")}
+            </Button>
+          </div>
+        )}
+
+        {loading ? (
+          <div className="flex items-center justify-center py-20 text-muted-foreground" role="status">
+            <Loader2 className="h-6 w-6 animate-spin" />
+          </div>
+        ) : challenges.length === 0 ? (
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}

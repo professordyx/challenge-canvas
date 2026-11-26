@@ -43,6 +43,10 @@ export const translations = {
     challengeTitle: "Título do Desafio",
     challengeTitlePlaceholder: "Ex: Acelerar a transformação digital no setor de varejo",
     autoSaved: "Salvo automaticamente",
+    saving: "Salvando...",
+    saveFailed: "Falha ao salvar",
+    retrySave: "Tentar novamente",
+    loadChallengesError: "Não foi possível carregar seus desafios agora. O servidor pode estar temporariamente instável.",
     
     // Canvas Sections
     strategicContext: "Contexto Estratégico",
@@ -233,6 +237,10 @@ export const translations = {
     challengeTitle: "Título del Desafío",
     challengeTitlePlaceholder: "Ej: Acelerar la transformación digital en el sector minorista",
     autoSaved: "Guardado automáticamente",
+    saving: "Guardando...",
+    saveFailed: "Error al guardar",
+    retrySave: "Reintentar",
+    loadChallengesError: "No se pudieron cargar sus desafíos ahora. El servidor puede estar temporalmente inestable.",
     
     strategicContext: "Contexto Estratégico",
     strategicContextPlaceholder: "Describa el escenario organizacional, tendencias del mercado y motivaciones estratégicas que originaron este desafío...",
@@ -416,6 +424,10 @@ export const translations = {
     challengeTitle: "Challenge Title",
     challengeTitlePlaceholder: "E.g.: Accelerate digital transformation in the retail sector",
     autoSaved: "Saved automatically",
+    saving: "Saving...",
+    saveFailed: "Failed to save",
+    retrySave: "Try again",
+    loadChallengesError: "Could not load your challenges right now. The server may be temporarily unavailable.",
     strategicContext: "Strategic Context",
     strategicContextPlaceholder: "Describe the organizational scenario, market trends and strategic motivations behind this challenge...",
     currentProblem: "Current Problem",

@@ -27,6 +27,8 @@ import {
   Eye,
   Mic,
   X,
+  AlertCircle,
+  RefreshCw,
 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import Footer from "@/components/layout/Footer";
@@ -62,7 +64,17 @@ const CanvasEditor = () => {
   const navigate = useNavigate();
   const { t, language } = useLanguage();
   const { user } = useAuth();
-  const { challenges, sharedChallenges, loading: challengesLoading, updateChallenge } = useChallenges();
+  const {
+    challenges,
+    sharedChallenges,
+    loading: challengesLoading,
+    loadError,
+    reloadChallenges,
+    updateChallenge,
+    updateCanvasField,
+    flushChallenge,
+    getSaveStatus,
+  } = useChallenges();
 
   // Find in own or shared
   const ownChallenge = challenges.find((c) => c.id === id);
@@ -71,8 +83,10 @@ const CanvasEditor = () => {
   const isOwner = !!ownChallenge;
   const isEditor = sharedChallenge?.permission === "editor";
   const canEdit = isOwner || isEditor;
+  const saveStatus = id ? getSaveStatus(id) : "idle";
+  const saveStatusRef = useRef(saveStatus);
+  saveStatusRef.current = saveStatus;
 
-  const autoSaveTimer = useRef<ReturnType<typeof setTimeout>>();
   const { toast } = useToast();
 
   const [improvingSection, setImprovingSection] = useState<string | null>(null);
@@ -85,8 +99,31 @@ const CanvasEditor = () => {
   const [interviewBannerDismissed, setInterviewBannerDismissed] = useState(false);
 
   useEffect(() => {
-    if (!challengesLoading && !challenge) navigate("/dashboard", { replace: true });
-  }, [challenge, challengesLoading, navigate]);
+    if (!challengesLoading && !loadError && !challenge) navigate("/dashboard", { replace: true });
+  }, [challenge, challengesLoading, loadError, navigate]);
+
+  // Flush pending autosave when leaving the editor or hiding the tab, and warn before closing with unsaved changes
+  useEffect(() => {
+    if (!id || !canEdit) return;
+    const handleVisibility = () => {
+      if (document.visibilityState === "hidden") void flushChallenge(id);
+    };
+    const handleBeforeUnload = (e: BeforeUnloadEvent) => {
+      const status = saveStatusRef.current;
+      if (status === "pending" || status === "saving" || status === "error") {
+        void flushChallenge(id);
+        e.preventDefault();
+        e.returnValue = "";
+      }
+    };
+    document.addEventListener("visibilitychange", handleVisibility);
+    window.addEventListener("beforeunload", handleBeforeUnload);
+    return () => {
+      document.removeEventListener("visibilitychange", handleVisibility);
+      window.removeEventListener("beforeunload", handleBeforeUnload);
+      void flushChallenge(id);
+    };
+  }, [id, canEdit, flushChallenge]);
 
   // Load saved evaluation and infographic
   useEffect(() => {
@@ -100,21 +137,16 @@ const CanvasEditor = () => {
 
   const handleFieldChange = useCallback(
     (field: keyof CanvasFields, value: string) => {
-      if (!id || !challenge) return;
-      const updatedCanvas = { ...challenge.canvas, [field]: value };
-      if (autoSaveTimer.current) clearTimeout(autoSaveTimer.current);
-      autoSaveTimer.current = setTimeout(() => {
-        updateChallenge(id, { canvas: updatedCanvas, status: "in_progress" });
-      }, 500);
-      updateChallenge(id, { canvas: updatedCanvas });
+      if (!id) return;
+      updateCanvasField(id, field, value, { immediate: false });
     },
-    [id, challenge, updateChallenge]
+    [id, updateCanvasField]
   );
 
   const handleTitleChange = useCallback(
     (title: string) => {
       if (!id) return;
-      updateChallenge(id, { title });
+      updateChallenge(id, { title }, { immediate: false });
     },
     [id, updateChallenge]
   );
@@ -187,6 +219,9 @@ const CanvasEditor = () => {
           } catch {}
         }
       }
+      if (id && improved) {
+        void flushChallenge(id);
+      }
     } catch (e: any) {
       toast({ title: t("aiError"), description: e.message, variant: "destructive" });
     } finally {
@@ -247,7 +282,22 @@ const CanvasEditor = () => {
     window.print();
   };
 
-  if (!challenge) return challengesLoading ? <div className="p-6 text-muted-foreground" role="status">…</div> : null;
+  if (!challenge) {
+    if (challengesLoading) return <div className="p-6 text-muted-foreground" role="status">…</div>;
+    if (loadError) {
+      return (
+        <div className="mx-auto flex max-w-lg flex-col items-center gap-4 px-4 py-20 text-center">
+          <AlertCircle className="h-10 w-10 text-destructive" />
+          <p className="text-sm text-muted-foreground">{t("loadChallengesError")}</p>
+          <Button variant="outline" onClick={() => void reloadChallenges()} className="gap-2">
+            <RefreshCw className="h-4 w-4" />
+            {t("retrySave")}
+          </Button>
+        </div>
+      );
+    }
+    return null;
+  }
 
   const getLevelColor = (level: string) => {
     if (level === "estratégico" || level === "estrategico" || level === "strategic") return "text-green-600";
@@ -299,10 +349,31 @@ const CanvasEditor = () => {
                 </Badge>
               )}
               {canEdit && (
-                <Badge variant="outline" className="text-xs">
-                  <Save className="mr-1 h-3 w-3" />
-                  {t("autoSaved")}
-                </Badge>
+                saveStatus === "error" ? (
+                  <Button
+                    variant="destructive"
+                    size="sm"
+                    className="h-7 gap-1.5 px-2.5 text-xs"
+                    onClick={() => id && void flushChallenge(id)}
+                  >
+                    <AlertCircle className="h-3.5 w-3.5" />
+                    {t("saveFailed")} · {t("retrySave")}
+                  </Button>
+                ) : (
+                  <Badge variant="outline" className="text-xs">
+                    {saveStatus === "pending" || saveStatus === "saving" ? (
+                      <>
+                        <Loader2 className="mr-1 h-3 w-3 animate-spin" />
+                        {t("saving")}
+                      </>
+                    ) : (
+                      <>
+                        <Save className="mr-1 h-3 w-3" />
+                        {t("autoSaved")}
+                      </>
+                    )}
+                  </Badge>
+                )
               )}
               {isOwner && (
                 <Button
