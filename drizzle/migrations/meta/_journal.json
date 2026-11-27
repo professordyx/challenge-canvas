@@ -50,6 +50,13 @@
       "when": 1795817949975,
       "tag": "0006_premium_subscriptions_and_monthly_usage",
       "breakpoints": true
+    },
+    {
+      "idx": 7,
+      "version": "7",
+      "when": 1795821888904,
+      "tag": "0007_restrict_billing_settings_read_to_admins",
+      "breakpoints": true
     }
   ]
 }
