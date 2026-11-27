@@ -10,7 +10,7 @@ export function getPaddleEnvironment(): 'sandbox' | 'live' { return token?.start
 let initialization: Promise<PaddleBrowser> | undefined;
 export function initializePaddle(): Promise<PaddleBrowser> {
   if (initialization) return initialization;
-  initialization = new Promise((resolve, reject) => {
+  initialization = new Promise<PaddleBrowser>((resolve, reject) => {
     if (!token) { reject(new Error('Payments are unavailable')); return; }
     const script = document.createElement('script');
     script.src = 'https://cdn.paddle.com/paddle/v2/paddle.js';
