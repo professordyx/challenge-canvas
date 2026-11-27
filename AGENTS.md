@@ -3,3 +3,4 @@
 - API telemetry is collected server-side through the shared monitoring helper for each provider attempt, without prompts, generated content, credentials, or raw provider error bodies.
 - Dashboard totals are aggregated in a permission-checked database function; request history is paginated separately so totals are never limited by page size.
 - Canvas edits are debounced and serialized per challenge through src/lib/autosave.ts so typing and AI streaming do not flood the database or overwrite newer edits.
+- Product plan constants live in src/lib/plans.ts; checkout and server enforcement must be activated together so users are not locked out before subscriptions are available.
