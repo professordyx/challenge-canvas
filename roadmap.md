@@ -1,6 +1,7 @@
 # Tasks
 - [x] Enable built-in subscription payments in test mode.
-- [ ] Create USD 5/month Premium and connect checkout — catalog setup underway; checkout fulfillment awaits purchase, cancellation and plan-change answers.
+- [x] Create USD 5/month Premium in the test catalog.
+- [ ] Connect checkout and subscription management with immediate paid upgrades and end-of-period cancellations/downgrades.
 - [ ] Enforce Free/Premium limits server-side and show usage — blocked until Premium checkout is available.
 - [x] Renew the home page with visual content and Free/Premium comparison.
 - [ ] Verify subscription checkout and access controls — blocked until payment setup.

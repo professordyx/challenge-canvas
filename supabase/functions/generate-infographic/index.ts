@@ -1,3 +1,4 @@
+import { reserveUsage, type UsageLease } from "../_shared/plan-access.ts";
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 import { monitoredFetch, recordApiUsage } from '../_shared/api-monitoring.ts';
@@ -14,6 +15,9 @@ const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/
 
 serve(async (req) => {
   if (req.method === "OPTIONS") return new Response(null, { headers: corsHeaders });
+
+  let usageLease: UsageLease | undefined;
+  let usageSucceeded = false;
 
   try {
     // --- Auth ---
@@ -106,6 +110,10 @@ serve(async (req) => {
       }
     }
 
+    const reservation = await reserveUsage(userId, "generate-infographic", parsed.environment, language);
+    if (reservation instanceof Response) return reservation;
+    usageLease = reservation;
+
     const GEMINI_API_KEY = Deno.env.get("Gemini_API_KEY");
     if (!GEMINI_API_KEY) {
       await recordApiUsage({ userId, provider: 'gemini', operation: 'generate-infographic', model: 'gemini-3-pro-image-preview' }, { success: false, duration_ms: 0, error_code: 'missing_key', error_message: 'Chave não configurada / Clave no configurada' });
@@ -194,6 +202,7 @@ Gere a imagem como um infográfico profissional no estilo editorial ilustrado.`;
     if (!uploadRes.ok) {
       console.error("Upload error:", await uploadRes.text());
       const imageUrl = `data:${mimeType};base64,${base64Data}`;
+      usageSucceeded = true;
       return new Response(JSON.stringify({ imageUrl }), {
         headers: { ...corsHeaders, "Content-Type": "application/json" },
       });
@@ -201,6 +210,7 @@ Gere a imagem como um infográfico profissional no estilo editorial ilustrado.`;
 
     const publicUrl = `${supabaseUrl}/storage/v1/object/public/canvas-assets/${fileName}`;
 
+    usageSucceeded = true;
     return new Response(JSON.stringify({ imageUrl: publicUrl }), {
       headers: { ...corsHeaders, "Content-Type": "application/json" },
     });
@@ -209,5 +219,7 @@ Gere a imagem como um infográfico profissional no estilo editorial ilustrado.`;
     return new Response(JSON.stringify({ error: e instanceof Error ? e.message : "Unknown error", fallback: true }), {
       status: 200, headers: { ...corsHeaders, "Content-Type": "application/json" },
     });
+  } finally {
+    if (usageLease) await usageLease.finish(usageSucceeded);
   }
 });

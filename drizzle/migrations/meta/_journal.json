@@ -43,6 +43,13 @@
       "when": 1795557343727,
       "tag": "0005_allow_interview_operations_in_monitoring_summary",
       "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "7",
+      "when": 1795817949975,
+      "tag": "0006_premium_subscriptions_and_monthly_usage",
+      "breakpoints": true
     }
   ]
 }

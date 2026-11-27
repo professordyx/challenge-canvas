@@ -15,6 +15,8 @@ import NotFound from "./pages/NotFound";
 import Manual from "./pages/Manual";
 import ProblemStatementGuide from "./pages/ProblemStatementGuide";
 import Admin from './pages/Admin';
+import Subscription from './pages/Subscription';
+import { PaymentTestModeBanner } from '@/components/PaymentTestModeBanner';
 
 const queryClient = new QueryClient();
 
@@ -35,11 +37,13 @@ const App = () => (
             <Sonner />
             <BrowserRouter>
               <Header />
+              <PaymentTestModeBanner />
               <main>
                 <Routes>
                   <Route path="/" element={<Landing />} />
                   <Route path="/auth" element={<Auth />} />
                   <Route path="/dashboard" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
+                  <Route path="/subscription" element={<ProtectedRoute><Subscription /></ProtectedRoute>} />
                   <Route path="/admin" element={<ProtectedRoute><Admin /></ProtectedRoute>} />
                   <Route path="/canvas/:id" element={<ProtectedRoute><CanvasEditor /></ProtectedRoute>} />
                   <Route path="/manual" element={<ProtectedRoute><Manual /></ProtectedRoute>} />

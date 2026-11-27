@@ -1,3 +1,4 @@
+import { reserveUsage, type UsageLease } from "../_shared/plan-access.ts";
 import { createClient } from "npm:@supabase/supabase-js@2";
 import { corsHeaders } from "npm:@supabase/supabase-js@2/cors";
 import { monitoredFetch, recordApiUsage } from "../_shared/api-monitoring.ts";
@@ -108,6 +109,9 @@ Deno.serve(async (req) => {
   let uploadedFileName: string | null = null;
   const GEMINI_API_KEY = Deno.env.get("Gemini_API_KEY");
 
+  let usageLease: UsageLease | undefined;
+  let usageSucceeded = false;
+
   try {
     const authHeader = req.headers.get("Authorization");
     if (!authHeader?.startsWith("Bearer ")) return json({ error: "Unauthorized" }, 401);
@@ -166,6 +170,10 @@ Deno.serve(async (req) => {
       if (!share || share.permission !== "editor") return json({ error: "Forbidden" }, 403);
     }
 
+    const reservation = await reserveUsage(userId, "transcribe-interview", form.get("environment"), language);
+    if (reservation instanceof Response) return reservation;
+    usageLease = reservation;
+
     if (!GEMINI_API_KEY) {
       await recordApiUsage(
         { userId, provider: "gemini", operation: "transcribe-interview", model: MODEL },
@@ -221,11 +229,13 @@ Deno.serve(async (req) => {
       .trim();
 
     if (!transcript) return json({ error: msgs.empty, fallback: true });
+    usageSucceeded = true;
     return json({ transcript });
   } catch (e) {
     console.error("transcribe-interview error:", e);
     return json({ error: msgs.generic, fallback: true });
   } finally {
+    if (usageLease) await usageLease.finish(usageSucceeded);
     if (uploadedFileName && GEMINI_API_KEY) {
       fetch(`https://generativelanguage.googleapis.com/v1beta/${uploadedFileName}?key=${GEMINI_API_KEY}`, {
         method: "DELETE",

@@ -2,7 +2,8 @@ import { Link, useLocation } from "react-router-dom";
 import { useLanguage } from "@/i18n/LanguageContext";
 import { useAuth } from "@/hooks/useAuth";
 import { Button } from "@/components/ui/button";
-import { LayoutDashboard, Globe, LogOut, ShieldCheck } from "lucide-react";
+import { LayoutDashboard, Globe, LogOut, ShieldCheck, CreditCard } from "lucide-react";
+import { billingCopy } from '@/i18n/billing';
 import { useAdmin } from '@/hooks/useAdmin';
 import { adminCopy } from '@/i18n/admin';
 import BrandLogo from "@/components/BrandLogo";
@@ -31,6 +32,7 @@ const Header = () => {
         </Link>
 
         <div className="flex items-center gap-2">
+          {user && <Button asChild variant="ghost" size="sm"><Link to="/subscription" aria-label={billingCopy[language].title}><CreditCard className="h-4 w-4" /><span className="hidden md:inline">{billingCopy[language].title}</span></Link></Button>}
           {isAdmin && <Link to="/admin"><Button variant="ghost" size="sm" className="gap-2" aria-label={adminCopy[language].admin}><ShieldCheck className="h-4 w-4" /><span className="hidden sm:inline">{adminCopy[language].admin}</span></Button></Link>}
           {user && (
             <Link to="/dashboard">

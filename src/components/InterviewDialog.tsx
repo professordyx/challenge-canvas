@@ -17,6 +17,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } f
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { cn } from "@/lib/utils";
+import { getPaddleEnvironment } from '@/lib/paddle';
 
 type Step = "record" | "transcript" | "review";
 
@@ -83,6 +84,7 @@ export function InterviewDialog({
         form.append("audio", blob, fileName || "interview.webm");
         form.append("challengeId", challengeId);
         form.append("language", language);
+        form.append("environment", getPaddleEnvironment());
 
         const resp = await fetch(`${SB_URL}/functions/v1/transcribe-interview`, {
           method: "POST",
@@ -156,7 +158,7 @@ export function InterviewDialog({
     setFilling(true);
     try {
       const { data, error } = await supabase.functions.invoke("fill-canvas", {
-        body: { transcript: clean, language, title: challengeTitle, challengeId },
+        body: { transcript: clean, language, title: challengeTitle, challengeId, environment: getPaddleEnvironment() },
       });
       if (error) throw error;
       if (data?.error) throw new Error(data.error);

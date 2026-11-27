@@ -3,6 +3,8 @@ import { Challenge, emptyCanvas, ChallengeStatus, CanvasFields } from "@/types/c
 import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
 import { createAutosaveQueue, SaveStatus } from "@/lib/autosave";
+import { getPaddleEnvironment } from '@/lib/paddle';
+import { useQueryClient } from '@tanstack/react-query';
 
 interface SharedChallenge extends Challenge {
   isShared: true;
@@ -21,7 +23,7 @@ interface ChallengesContextType {
   updateCanvasField: (id: string, field: keyof CanvasFields, value: string, options?: { immediate?: boolean }) => void;
   flushChallenge: (id: string) => Promise<void>;
   getSaveStatus: (id: string) => SaveStatus;
-  duplicateChallenge: (id: string) => void;
+  duplicateChallenge: (id: string) => Promise<void>;
   deleteChallenge: (id: string) => void;
 }
 
@@ -42,6 +44,7 @@ const dbToChallenge = (row: any): Challenge => ({
 
 export const ChallengesProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const { user, loading: authLoading } = useAuth();
+  const queryClient = useQueryClient();
   const [challenges, setChallenges] = useState<Challenge[]>([]);
   const [sharedChallenges, setSharedChallenges] = useState<SharedChallenge[]>([]);
   const [loading, setLoading] = useState(true);
@@ -142,17 +145,14 @@ export const ChallengesProvider: React.FC<{ children: React.ReactNode }> = ({ ch
 
   const createChallenge = useCallback(async (title: string): Promise<Challenge> => {
     if (!user) throw new Error("Not authenticated");
-    const insertData = { title, user_id: user.id, status: "draft", sections: emptyCanvas as any };
     const { data, error } = await supabase
-      .from("challenges")
-      .insert([insertData])
-      .select()
-      .single();
+      .rpc('create_plan_canvas', { p_title: title, p_sections: emptyCanvas as any, p_environment: getPaddleEnvironment() });
     if (error) throw error;
     const challenge = dbToChallenge(data);
     setChallenges((prev) => [challenge, ...prev]);
+    void queryClient.invalidateQueries({ queryKey: ['plan', user.id] });
     return challenge;
-  }, [user]);
+  }, [user, queryClient]);
 
   const updateChallenge = useCallback(
     (id: string, updates: Partial<Challenge>, options?: { immediate?: boolean }) => {
@@ -200,21 +200,14 @@ export const ChallengesProvider: React.FC<{ children: React.ReactNode }> = ({ ch
     if (!user) return;
     const original = challenges.find((c) => c.id === id);
     if (!original) return;
-    const insertData = {
-      title: `${original.title} (cópia)`,
-      user_id: user.id,
-      status: "draft",
-      sections: original.canvas as any,
-    };
     const { data, error } = await supabase
-      .from("challenges")
-      .insert([insertData])
-      .select()
-      .single();
-    if (!error && data) {
+      .rpc('create_plan_canvas', { p_title: `${original.title} (cópia)`, p_sections: original.canvas as any, p_environment: getPaddleEnvironment() });
+    if (error) throw error;
+    if (data) {
       setChallenges((prev) => [dbToChallenge(data), ...prev]);
+      void queryClient.invalidateQueries({ queryKey: ['plan', user.id] });
     }
-  }, [user, challenges]);
+  }, [user, challenges, queryClient]);
 
   const deleteChallenge = useCallback((id: string) => {
     setChallenges((prev) => prev.filter((c) => c.id !== id));

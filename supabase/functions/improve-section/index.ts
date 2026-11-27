@@ -1,3 +1,4 @@
+import { reserveUsage, type UsageLease } from "../_shared/plan-access.ts";
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 import { callClaude } from "../_shared/anthropic.ts";
@@ -24,6 +25,9 @@ const jsonResponse = (body: Record<string, unknown>) =>
 
 serve(async (req) => {
   if (req.method === "OPTIONS") return new Response(null, { headers: corsHeaders });
+
+  let usageLease: UsageLease | undefined;
+  let usageSucceeded = false;
 
   try {
     // --- Auth check ---
@@ -64,6 +68,10 @@ serve(async (req) => {
     if (language !== "pt" && language !== "es" && language !== "en") {
       return jsonResponse({ error: "Invalid language" });
     }
+
+    const reservation = await reserveUsage(userData.user.id, "improve-section", parsed.environment, language);
+    if (reservation instanceof Response) return reservation;
+    usageLease = reservation;
 
     const lang = language === "es" ? "español" : language === "en" ? "English" : "português brasileiro";
 
@@ -124,6 +132,7 @@ serve(async (req) => {
       }
     })();
 
+    usageSucceeded = true;
     return new Response(readable, {
       headers: { ...corsHeaders, "Content-Type": "text/event-stream" },
     });
@@ -133,5 +142,7 @@ serve(async (req) => {
       error: e instanceof Error ? e.message : aiUnavailableMessage,
       fallback: true,
     });
+  } finally {
+    if (usageLease) await usageLease.finish(usageSucceeded);
   }
 });

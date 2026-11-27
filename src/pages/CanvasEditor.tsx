@@ -37,6 +37,10 @@ import { ShareDialog } from "@/components/ShareDialog";
 import { InterviewDialog } from "@/components/InterviewDialog";
 import { isCanvasEmpty } from "@/lib/interview-merge";
 import { BrandSymbol } from "@/components/BrandLogo";
+import { usePlan } from '@/hooks/usePlan';
+import { getPaddleEnvironment } from '@/lib/paddle';
+import { billingCopy } from '@/i18n/billing';
+import { Lock } from 'lucide-react';
 
 interface SectionConfig {
   key: keyof CanvasFields;
@@ -64,6 +68,8 @@ const CanvasEditor = () => {
   const navigate = useNavigate();
   const { t, language } = useLanguage();
   const { user } = useAuth();
+  const plan = usePlan();
+  const billing = billingCopy[language];
   const {
     challenges,
     sharedChallenges,
@@ -97,6 +103,10 @@ const CanvasEditor = () => {
   const [shareOpen, setShareOpen] = useState(false);
   const [interviewOpen, setInterviewOpen] = useState(false);
   const [interviewBannerDismissed, setInterviewBannerDismissed] = useState(false);
+  const requestInterview = () => {
+    if (!plan.allowed('recording')) { navigate('/subscription'); return; }
+    setInterviewOpen(true);
+  };
 
   useEffect(() => {
     if (!challengesLoading && !loadError && !challenge) navigate("/dashboard", { replace: true });
@@ -152,6 +162,7 @@ const CanvasEditor = () => {
   );
 
   const handleImproveSection = async (sectionKey: keyof CanvasFields, sectionLabel: string) => {
+    if (!plan.allowed('assistant')) { navigate('/subscription'); return; }
     if (!challenge) return;
     const currentText = challenge.canvas[sectionKey];
     if (!currentText.trim()) {
@@ -174,7 +185,7 @@ const CanvasEditor = () => {
           "Content-Type": "application/json",
           Authorization: `Bearer ${token}`,
         },
-        body: JSON.stringify({ sectionKey, sectionLabel, currentText, language }),
+        body: JSON.stringify({ sectionKey, sectionLabel, currentText, language, environment: getPaddleEnvironment() }),
       });
 
 
@@ -187,6 +198,7 @@ const CanvasEditor = () => {
       const contentType = resp.headers.get("content-type") || "";
       if (contentType.includes("application/json")) {
         const errJson = await resp.json().catch(() => ({}));
+        if (errJson.upgrade) navigate('/subscription');
         throw new Error(errJson.error || "AI error");
       }
 
@@ -226,18 +238,21 @@ const CanvasEditor = () => {
       toast({ title: t("aiError"), description: e.message, variant: "destructive" });
     } finally {
       setImprovingSection(null);
+      void plan.refetch();
     }
   };
 
   const handleEvaluate = async () => {
+    if (!plan.allowed('evaluations')) { navigate('/subscription'); return; }
     if (!challenge || !id) return;
     setEvaluating(true);
     setEvaluation(null);
     try {
       const { data, error } = await supabase.functions.invoke("evaluate-canvas", {
-        body: { canvas: challenge.canvas, title: challenge.title, language },
+        body: { canvas: challenge.canvas, title: challenge.title, language, environment: getPaddleEnvironment() },
       });
       if (error) throw error;
+      if (data?.upgrade) navigate('/subscription');
       if (data?.error) throw new Error(data.error);
       setEvaluation(data);
       // Save evaluation to DB
@@ -246,10 +261,12 @@ const CanvasEditor = () => {
       toast({ title: t("aiError"), description: e.message, variant: "destructive" });
     } finally {
       setEvaluating(false);
+      void plan.refetch();
     }
   };
 
   const handleGenerateInfographic = async () => {
+    if (!plan.allowed('infographics')) { navigate('/subscription'); return; }
     if (!challenge || !id) return;
     if (!evaluation) {
       toast({ title: t("evaluateFirst"), variant: "destructive" });
@@ -259,9 +276,10 @@ const CanvasEditor = () => {
     setInfographicUrl(null);
     try {
       const { data, error } = await supabase.functions.invoke("generate-infographic", {
-        body: { canvas: challenge.canvas, title: challenge.title, language, challengeId: id },
+        body: { canvas: challenge.canvas, title: challenge.title, language, challengeId: id, environment: getPaddleEnvironment() },
       });
       if (error) throw error;
+      if (data?.upgrade) navigate('/subscription');
       if (data?.error) throw new Error(data.error);
       if (data?.imageUrl) {
         setInfographicUrl(data.imageUrl);
@@ -275,6 +293,7 @@ const CanvasEditor = () => {
       toast({ title: t("infographicError"), description: e.message, variant: "destructive" });
     } finally {
       setGeneratingInfographic(false);
+      void plan.refetch();
     }
   };
 
@@ -391,9 +410,10 @@ const CanvasEditor = () => {
                   variant="outline"
                   size="sm"
                   className="gap-1.5"
-                  onClick={() => setInterviewOpen(true)}
+                  onClick={requestInterview}
+                  title={!plan.allowed('recording') ? billing.locked : undefined}
                 >
-                  <Mic className="h-4 w-4 text-accent" />
+                  {plan.allowed('recording') ? <Mic className="h-4 w-4 text-accent" /> : <Lock className="h-4 w-4" />}
                   {t("recordInterview")}
                 </Button>
               )}
@@ -402,12 +422,13 @@ const CanvasEditor = () => {
                 size="sm"
                 className="gap-1.5"
                 onClick={handleEvaluate}
-                disabled={evaluating || !canEdit}
+                disabled={evaluating || !canEdit || plan.isLoading}
+                title={!plan.allowed('evaluations') ? billing.limit : undefined}
               >
                 {evaluating ? (
                   <Loader2 className="h-4 w-4 animate-spin" />
                 ) : (
-                  <BarChart3 className="h-4 w-4" />
+                  plan.allowed('evaluations') ? <BarChart3 className="h-4 w-4" /> : <Lock className="h-4 w-4" />
                 )}
                 {evaluating ? t("evaluating") : t("evaluateCanvas")}
               </Button>
@@ -417,6 +438,8 @@ const CanvasEditor = () => {
               </Button>
             </div>
           </div>
+
+          {plan.data?.enabled && !plan.data.premium && <p className="mb-5 text-xs text-muted-foreground">{billing.free} · {billing.evaluations}: {plan.data.usage.evaluations} / 1 · {billing.infographics}: {plan.data.usage.infographics} / 1</p>}
 
           {/* Evaluation Results */}
           {evaluation && (
@@ -470,7 +493,7 @@ const CanvasEditor = () => {
                 </div>
               </div>
               <div className="flex shrink-0 items-center gap-2">
-                <Button size="sm" onClick={() => setInterviewOpen(true)} className="gap-1.5">
+                <Button size="sm" onClick={requestInterview} className="gap-1.5">
                   <Mic className="h-4 w-4" />
                   {t("recordInterview")}
                 </Button>
@@ -516,13 +539,14 @@ const CanvasEditor = () => {
                           variant="ghost"
                           size="sm"
                           className="h-7 gap-1 text-xs text-muted-foreground"
-                          disabled={improvingSection === section.key}
+                          disabled={improvingSection === section.key || plan.isLoading}
+                          title={!plan.allowed('assistant') ? billing.locked : undefined}
                           onClick={() => handleImproveSection(section.key, t(section.labelKey))}
                         >
                           {improvingSection === section.key ? (
                             <Loader2 className="h-3 w-3 animate-spin" />
                           ) : (
-                            <Sparkles className="h-3 w-3" />
+                            plan.allowed('assistant') ? <Sparkles className="h-3 w-3" /> : <Lock className="h-3 w-3" />
                           )}
                           {improvingSection === section.key ? t("improving") : t("improveWithAI")}
                         </Button>
@@ -566,13 +590,14 @@ const CanvasEditor = () => {
                     </div>
                     <Button
                       onClick={handleGenerateInfographic}
-                      disabled={generatingInfographic}
+                      disabled={generatingInfographic || !canEdit || plan.isLoading}
+                      title={!plan.allowed('infographics') ? billing.limit : undefined}
                       className="gap-2"
                     >
                       {generatingInfographic ? (
                         <Loader2 className="h-4 w-4 animate-spin" />
                       ) : (
-                        <ImageIcon className="h-4 w-4" />
+                        plan.allowed('infographics') ? <ImageIcon className="h-4 w-4" /> : <Lock className="h-4 w-4" />
                       )}
                       {generatingInfographic ? t("generatingInfographic") : t("generateInfographic")}
                     </Button>
@@ -708,7 +733,7 @@ const CanvasEditor = () => {
       )}
 
       {/* Interview Dialog */}
-      {canEdit && id && (
+      {canEdit && id && plan.allowed('recording') && (
         <InterviewDialog
           open={interviewOpen}
           onOpenChange={setInterviewOpen}

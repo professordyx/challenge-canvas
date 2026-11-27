@@ -1,3 +1,4 @@
+import { reserveUsage, type UsageLease } from "../_shared/plan-access.ts";
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 import { callClaude } from "../_shared/anthropic.ts";
@@ -13,6 +14,9 @@ const MAX_FIELD = 5000;
 
 serve(async (req) => {
   if (req.method === "OPTIONS") return new Response(null, { headers: corsHeaders });
+
+  let usageLease: UsageLease | undefined;
+  let usageSucceeded = false;
 
   try {
     // --- Auth check ---
@@ -74,6 +78,10 @@ serve(async (req) => {
       }
     }
 
+    const reservation = await reserveUsage(userData.user.id, "evaluate-canvas", parsed.environment, language);
+    if (reservation instanceof Response) return reservation;
+    usageLease = reservation;
+
     const lang = language === "es" ? "español" : language === "en" ? "English" : "português brasileiro";
 
     const canvasText = Object.entries(canvas)
@@ -116,6 +124,7 @@ Retorne APENAS o JSON válido, sem markdown code blocks.`;
       evaluation = { score: 0, level: "fraco", summary: content, sections: {}, recommendations: [] };
     }
 
+    usageSucceeded = true;
     return new Response(JSON.stringify(evaluation), {
       headers: { ...corsHeaders, "Content-Type": "application/json" },
     });
@@ -124,5 +133,7 @@ Retorne APENAS o JSON válido, sem markdown code blocks.`;
     return new Response(JSON.stringify({ error: e instanceof Error ? e.message : "Unknown error" }), {
       status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" },
     });
+  } finally {
+    if (usageLease) await usageLease.finish(usageSucceeded);
   }
 });

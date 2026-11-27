@@ -9,6 +9,8 @@ import { Button } from '@/components/ui/button';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
 import Footer from '@/components/layout/Footer';
 import workshop from '@/assets/canvas-workshop.png.asset.json';
+import { getPaddleEnvironment } from '@/lib/paddle';
+import { billingCopy } from '@/i18n/billing';
 
 const featureIcons = [Sparkles, Mic, BarChart3, ImageIcon, FileDown, Users];
 
@@ -17,6 +19,7 @@ export default function Landing() {
   const { user } = useAuth();
   const c = plansCopy[language];
   const startPath = user ? '/dashboard' : '/auth';
+  const testPayments = getPaddleEnvironment() === 'sandbox';
   return (
     <>
       <Helmet>
@@ -81,10 +84,10 @@ export default function Landing() {
               <h3 className="text-2xl font-semibold">Premium</h3><p className="mt-2 text-sm text-muted-foreground">{c.premiumDesc}</p>
               <p className="mt-7 font-display text-4xl font-semibold">USD {PREMIUM_MONTHLY_USD.toLocaleString(language, { minimumFractionDigits: 2 })}<span className="ml-1 text-sm font-normal text-muted-foreground">{c.month}</span></p>
               <ul className="my-7 space-y-4">{c.premiumItems.map(item => <li key={item} className="flex gap-3 text-sm"><Check className="h-4 w-4 shrink-0 text-accent" />{item}</li>)}</ul>
-              <Button disabled className="mt-auto w-full rounded-md bg-accent text-accent-foreground">{c.pending}</Button>
+              <Button asChild className="mt-auto w-full rounded-md bg-accent text-accent-foreground"><Link to={user ? '/subscription' : '/auth'}>{testPayments ? billingCopy[language].upgrade : c.pending}<ArrowRight className="ml-2 h-4 w-4" /></Link></Button>
             </article>
           </div>
-          <p className="mx-auto mt-6 max-w-xl text-center text-xs leading-6 text-muted-foreground">{c.notice}</p>
+          <p className="mx-auto mt-6 max-w-xl text-center text-xs leading-6 text-muted-foreground">{testPayments ? billingCopy[language].test : c.notice}</p>
         </div>
       </section>
 

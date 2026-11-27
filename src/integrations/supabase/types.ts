@@ -86,6 +86,21 @@ export type Database = {
         }
         Relationships: []
       }
+      billing_settings: {
+        Row: {
+          enabled: boolean
+          environment: string
+        }
+        Insert: {
+          enabled?: boolean
+          environment: string
+        }
+        Update: {
+          enabled?: boolean
+          environment?: string
+        }
+        Relationships: []
+      }
       challenge_shares: {
         Row: {
           challenge_id: string
@@ -160,6 +175,54 @@ export type Database = {
         }
         Relationships: []
       }
+      payment_events: {
+        Row: {
+          environment: string
+          event_id: string
+          occurred_at: string
+        }
+        Insert: {
+          environment: string
+          event_id: string
+          occurred_at: string
+        }
+        Update: {
+          environment?: string
+          event_id?: string
+          occurred_at?: string
+        }
+        Relationships: []
+      }
+      plan_usage: {
+        Row: {
+          challenge_id: string | null
+          created_at: string
+          environment: string
+          id: string
+          operation: string
+          state: string
+          user_id: string
+        }
+        Insert: {
+          challenge_id?: string | null
+          created_at?: string
+          environment: string
+          id?: string
+          operation: string
+          state?: string
+          user_id: string
+        }
+        Update: {
+          challenge_id?: string | null
+          created_at?: string
+          environment?: string
+          id?: string
+          operation?: string
+          state?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
           avatar_url: string | null
@@ -185,6 +248,57 @@ export type Database = {
           display_name?: string | null
           id?: string
           preferred_language?: string | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      subscriptions: {
+        Row: {
+          cancel_at_period_end: boolean
+          created_at: string
+          current_period_end: string | null
+          current_period_start: string | null
+          environment: string
+          id: string
+          last_event_at: string
+          paddle_customer_id: string
+          paddle_subscription_id: string
+          price_id: string
+          product_id: string
+          status: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          cancel_at_period_end?: boolean
+          created_at?: string
+          current_period_end?: string | null
+          current_period_start?: string | null
+          environment: string
+          id?: string
+          last_event_at: string
+          paddle_customer_id: string
+          paddle_subscription_id: string
+          price_id: string
+          product_id: string
+          status: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          cancel_at_period_end?: boolean
+          created_at?: string
+          current_period_end?: string | null
+          current_period_start?: string | null
+          environment?: string
+          id?: string
+          last_event_at?: string
+          paddle_customer_id?: string
+          paddle_subscription_id?: string
+          price_id?: string
+          product_id?: string
+          status?: string
           updated_at?: string
           user_id?: string
         }
@@ -238,6 +352,36 @@ export type Database = {
           user_id: string
         }[]
       }
+      apply_subscription_event: {
+        Args: {
+          p_environment: string
+          p_event_id: string
+          p_occurred_at: string
+          p_subscription: Json
+        }
+        Returns: undefined
+      }
+      create_plan_canvas: {
+        Args: { p_environment?: string; p_sections: Json; p_title: string }
+        Returns: {
+          created_at: string
+          evaluation: Json | null
+          id: string
+          infographic_url: string | null
+          interview_transcript: string | null
+          sections: Json
+          status: string
+          title: string
+          updated_at: string
+          user_id: string
+        }
+        SetofOptions: {
+          from: "*"
+          to: "challenges"
+          isOneToOne: true
+          isSetofReturn: false
+        }
+      }
       find_user_by_email: {
         Args: { lookup_email: string }
         Returns: {
@@ -246,12 +390,21 @@ export type Database = {
           user_id: string
         }[]
       }
+      get_plan_usage: { Args: { p_environment?: string }; Returns: Json }
       has_role: {
         Args: {
           _role: Database["public"]["Enums"]["app_role"]
           _user_id: string
         }
         Returns: boolean
+      }
+      premium_access: {
+        Args: { p_environment?: string; p_user: string }
+        Returns: boolean
+      }
+      reserve_plan_usage: {
+        Args: { p_environment?: string; p_operation: string; p_user: string }
+        Returns: string
       }
     }
     Enums: {

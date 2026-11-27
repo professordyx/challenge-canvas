@@ -42,6 +42,9 @@ import {
   Loader2,
 } from "lucide-react";
 import Footer from "@/components/layout/Footer";
+import { usePlan } from '@/hooks/usePlan';
+import { useToast } from '@/hooks/use-toast';
+import { billingCopy } from '@/i18n/billing';
 
 const statusVariant: Record<ChallengeStatus, "default" | "secondary" | "outline"> = {
   draft: "outline",
@@ -50,7 +53,10 @@ const statusVariant: Record<ChallengeStatus, "default" | "secondary" | "outline"
 };
 
 const Dashboard = () => {
-  const { t } = useLanguage();
+  const { t, language } = useLanguage();
+  const plan = usePlan();
+  const { toast } = useToast();
+  const billing = billingCopy[language];
   const navigate = useNavigate();
   const {
     challenges,
@@ -65,16 +71,31 @@ const Dashboard = () => {
   const [showNew, setShowNew] = useState(false);
   const [newTitle, setNewTitle] = useState("");
   const [deleteId, setDeleteId] = useState<string | null>(null);
+  const [creating, setCreating] = useState(false);
+  const openNew = () => {
+    if (!plan.allowed('canvases')) { navigate('/subscription'); return; }
+    setShowNew(true);
+  };
+  const handleDuplicate = async (id: string) => {
+    if (!plan.allowed('canvases')) { navigate('/subscription'); return; }
+    try { await duplicateChallenge(id); }
+    catch (error: any) { toast({ title: error.message?.includes('MONTHLY_LIMIT') ? billing.limit : t('loadChallengesError'), variant: 'destructive' }); }
+  };
 
   const statusLabel = (s: ChallengeStatus) =>
     s === "draft" ? t("draft") : s === "in_progress" ? t("inProgress") : t("completed");
 
   const handleCreate = async () => {
-    if (!newTitle.trim()) return;
-    const c = await createChallenge(newTitle.trim());
-    setNewTitle("");
-    setShowNew(false);
-    navigate(`/canvas/${c.id}`);
+    if (!newTitle.trim() || creating) return;
+    setCreating(true);
+    try {
+      const c = await createChallenge(newTitle.trim());
+      setNewTitle("");
+      setShowNew(false);
+      navigate(`/canvas/${c.id}`);
+    } catch (error: any) {
+      toast({ title: error.message?.includes('MONTHLY_LIMIT') ? billing.limit : t('loadChallengesError'), variant: 'destructive' });
+    } finally { setCreating(false); }
   };
 
   const getScoreColor = (score: number | null) => {
@@ -106,11 +127,16 @@ const Dashboard = () => {
               <BookOpen className="h-4 w-4" />
               {t("manual")}
             </Button>
-            <Button onClick={() => setShowNew(true)} className="gap-2">
+            <Button onClick={openNew} disabled={plan.isLoading} className="gap-2">
               <Plus className="h-4 w-4" />
               {t("createNew")}
             </Button>
           </div>
+        </div>
+
+        <div className="mb-6 flex flex-wrap items-center justify-between gap-3 border-b border-border pb-4">
+          <span className="text-sm text-muted-foreground">{plan.data?.premium ? billing.premium : billing.free}{plan.data?.enabled && !plan.data.premium ? ` · ${billing.canvases}: ${plan.data.usage.canvases} / 1` : ''}</span>
+          <Button variant="ghost" size="sm" onClick={() => navigate('/subscription')}>{billing.title}</Button>
         </div>
 
         {loadError && (
@@ -142,7 +168,7 @@ const Dashboard = () => {
             <FileText className="mb-4 h-12 w-12 text-muted-foreground/50" />
             <p className="text-lg font-medium text-muted-foreground">{t("noChallenges")}</p>
             <p className="mt-1 text-sm text-muted-foreground/70">{t("startFirst")}</p>
-            <Button onClick={() => setShowNew(true)} className="mt-6 gap-2">
+            <Button onClick={openNew} disabled={plan.isLoading} className="mt-6 gap-2">
               <Plus className="h-4 w-4" />
               {t("createNew")}
             </Button>
@@ -193,7 +219,7 @@ const Dashboard = () => {
                       <Button
                         variant="ghost"
                         size="sm"
-                        onClick={() => duplicateChallenge(c.id)}
+                        onClick={() => void handleDuplicate(c.id)}
                         className="gap-1"
                       >
                         <Copy className="h-3.5 w-3.5" />
@@ -298,7 +324,7 @@ const Dashboard = () => {
             <Button variant="outline" onClick={() => setShowNew(false)}>
               Cancel
             </Button>
-            <Button onClick={handleCreate} disabled={!newTitle.trim()}>
+            <Button onClick={handleCreate} disabled={!newTitle.trim() || creating}>
               {t("createNew")}
             </Button>
           </DialogFooter>

@@ -1,3 +1,4 @@
+import { reserveUsage, type UsageLease } from "../_shared/plan-access.ts";
 import { createClient } from "npm:@supabase/supabase-js@2";
 import { corsHeaders } from "npm:@supabase/supabase-js@2/cors";
 import { callClaude } from "../_shared/anthropic.ts";
@@ -40,6 +41,9 @@ function cleanPlainText(value: unknown): string {
 
 Deno.serve(async (req) => {
   if (req.method === "OPTIONS") return new Response("ok", { headers: corsHeaders });
+
+  let usageLease: UsageLease | undefined;
+  let usageSucceeded = false;
 
   try {
     const authHeader = req.headers.get("Authorization");
@@ -96,6 +100,10 @@ Deno.serve(async (req) => {
       if (!share || share.permission !== "editor") return json({ error: "Forbidden" }, 403);
     }
 
+    const reservation = await reserveUsage(userId, "fill-canvas", parsed.environment, language);
+    if (reservation instanceof Response) return reservation;
+    usageLease = reservation;
+
     const lang = language === "es" ? "español" : language === "en" ? "English" : "português brasileiro";
     const systemPrompt = `Você é um especialista em Challenge Canvas e problem framing estratégico.
 Leia a transcrição da entrevista e extraia informações para preencher os 12 campos do Challenge Canvas em ${lang}.
@@ -149,9 +157,12 @@ ${CANVAS_KEYS.join(", ")}.
       fields[key] = cleanPlainText(extracted?.[key]);
     }
 
+    usageSucceeded = true;
     return json({ fields });
   } catch (e) {
     console.error("fill-canvas error:", e);
     return json({ error: e instanceof Error ? e.message : "Unknown error", fallback: true });
+  } finally {
+    if (usageLease) await usageLease.finish(usageSucceeded);
   }
 });
