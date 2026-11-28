@@ -4,7 +4,7 @@ import { classifyApiError, tokenCount } from './telemetry-data.ts';
 type Context = {
   userId: string;
   provider: 'anthropic' | 'gemini';
-  operation: 'improve-section' | 'evaluate-canvas' | 'generate-infographic' | 'transcribe-interview' | 'fill-canvas';
+  operation: 'improve-section' | 'evaluate-canvas' | 'generate-infographic' | 'transcribe-interview' | 'fill-canvas' | 'support-chat';
   model: string;
 };
 type Outcome = { success: boolean; http_status?: number; duration_ms: number; input_tokens?: number | null; output_tokens?: number | null; error_code?: string; error_message?: string };

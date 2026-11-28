@@ -6,18 +6,22 @@ import { supabase } from '@/integrations/supabase/client';
 import { useAdmin } from '@/hooks/useAdmin';
 import { useLanguage } from '@/i18n/LanguageContext';
 import { adminCopy } from '@/i18n/admin';
+import { supportCopy } from '@/i18n/support';
 import { ApiSummary, CostSummary, ModelPrice, estimateCost, successRate } from '@/lib/api-monitoring';
 import { Input } from '@/components/ui/input';
 import { toast } from 'sonner';
 import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { AdminSupportTab } from '@/components/admin/AdminSupportTab';
 
 const PAGE_SIZE = 20;
 
 export default function Admin() {
   const { language } = useLanguage();
   const c = adminCopy[language];
+  const sc = supportCopy[language];
   const access = useAdmin();
   const [days, setDays] = useState('7');
   const [provider, setProvider] = useState('all');
@@ -34,6 +38,7 @@ export default function Admin() {
     : name === 'evaluate-canvas' ? c.evaluate
     : name === 'transcribe-interview' ? c.transcribe
     : name === 'fill-canvas' ? c.fillCanvas
+    : name === 'support-chat' ? c.supportChat
     : c.infographic;
   const query = useQuery({
     queryKey: ['api-monitoring', since, provider, operation, status, page, userId], enabled: access.isAdmin,
@@ -98,15 +103,21 @@ export default function Admin() {
   const max = Math.max(1, ...(summary?.daily.map(item => item.requests) ?? []));
   return <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6">
     <Helmet><title>{c.title} | Challenge Canvas</title><meta name="robots" content="noindex,nofollow" /></Helmet>
-    <div className="mb-8 flex flex-wrap items-start justify-between gap-4">
+    <div className="mb-6 flex flex-wrap items-start justify-between gap-4">
       <div><p className="mb-2 flex items-center gap-2 text-sm font-medium text-accent"><ShieldCheck className="h-4 w-4" />{c.admin}</p>
         <h1 className="text-3xl font-bold">{c.title}</h1><p className="mt-2 text-muted-foreground">{c.subtitle}</p></div>
       <Button variant="outline" onClick={() => query.refetch()} disabled={query.isFetching} className="gap-2"><RefreshCw className={`h-4 w-4 ${query.isFetching ? 'animate-spin motion-reduce:animate-none' : ''}`} />{c.refresh}</Button>
     </div>
+    <Tabs defaultValue="monitoring" className="space-y-6">
+      <TabsList>
+        <TabsTrigger value="monitoring">{sc.adminTabMonitoring}</TabsTrigger>
+        <TabsTrigger value="support">{sc.adminTabSupport}</TabsTrigger>
+      </TabsList>
+      <TabsContent value="monitoring" className="space-y-0">
     <div className="mb-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-5">
       {selector(c.period, days, filter(setDays), [['1', c.day], ['7', c.week], ['30', c.month]])}
       {selector(c.provider, provider, filter(setProvider), [['all', c.all], ['anthropic', 'Anthropic'], ['gemini', 'Gemini']])}
-      {selector(c.operation, operation, filter(setOperation), [['all', c.all], ['improve-section', c.improve], ['evaluate-canvas', c.evaluate], ['generate-infographic', c.infographic], ['transcribe-interview', c.transcribe], ['fill-canvas', c.fillCanvas]])}
+      {selector(c.operation, operation, filter(setOperation), [['all', c.all], ['improve-section', c.improve], ['evaluate-canvas', c.evaluate], ['generate-infographic', c.infographic], ['transcribe-interview', c.transcribe], ['fill-canvas', c.fillCanvas], ['support-chat', c.supportChat]])}
       {selector(c.status, status, filter(setStatus), [['all', c.all], ['success', c.success], ['error', c.error]])}
       {selector(c.userFilter, userId, filter(setUserId), [['all', c.all], ...((query.data?.costs.users ?? []).map(u => [u.user_id, u.email ?? u.user_id] as [string, string]))])}
     </div>
@@ -147,5 +158,10 @@ export default function Admin() {
         <Button className="mt-4" onClick={savePrices} disabled={!Object.keys(priceEdits).length}>{c.save}</Button>
       </section><p className="mt-8 text-xs text-muted-foreground">{c.start}</p>
     </>}
+      </TabsContent>
+      <TabsContent value="support">
+        <AdminSupportTab enabled={access.isAdmin} />
+      </TabsContent>
+    </Tabs>
   </div>;
 }

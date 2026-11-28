@@ -14,11 +14,12 @@ export const msgs = {
 
 export async function callClaude(opts: {
   system: string;
-  user: string;
+  user?: string;
+  messages?: { role: "user" | "assistant"; content: string }[];
   stream: boolean;
   maxTokens?: number;
   userId: string;
-  operation: 'improve-section' | 'evaluate-canvas' | 'fill-canvas';
+  operation: 'improve-section' | 'evaluate-canvas' | 'fill-canvas' | 'support-chat';
 }): Promise<{ response?: Response; model?: string; error?: string }> {
   const key = Deno.env.get("anthropic_challenge_canvas");
   if (!key) {
@@ -40,7 +41,7 @@ export async function callClaude(opts: {
         max_tokens: opts.maxTokens ?? 4096,
         system: opts.system,
         stream: opts.stream,
-        messages: [{ role: "user", content: opts.user }],
+        messages: opts.messages?.length ? opts.messages : [{ role: "user", content: opts.user ?? "" }],
       }),
     });
     if (r.ok) return { response: r, model };
