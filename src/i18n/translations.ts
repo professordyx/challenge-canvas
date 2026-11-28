@@ -82,6 +82,9 @@ export const translations = {
     // Footer
     developedBy: "Desenvolvido por",
     allRightsReserved: "Todos os direitos reservados",
+    termsOfService: "Termos e Condições",
+    privacyPolicy: "Aviso de Privacidade",
+    refundPolicy: "Política de Reembolso",
 
     // Settings
     userName: "Nome do Usuário",
@@ -273,6 +276,9 @@ export const translations = {
     
     developedBy: "Desarrollado por",
     allRightsReserved: "Todos los derechos reservados",
+    termsOfService: "Términos y Condiciones",
+    privacyPolicy: "Aviso de Privacidad",
+    refundPolicy: "Política de Reembolso",
 
     userName: "Nombre del Usuario",
     selectLanguage: "Seleccionar Idioma",
@@ -457,6 +463,9 @@ export const translations = {
     strategic: "Strategic",
     developedBy: "Developed by",
     allRightsReserved: "All rights reserved",
+    termsOfService: "Terms & Conditions",
+    privacyPolicy: "Privacy Notice",
+    refundPolicy: "Refund Policy",
     userName: "User Name",
     selectLanguage: "Select Language",
     portuguese: "Português",

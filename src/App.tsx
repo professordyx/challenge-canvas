@@ -16,6 +16,9 @@ import Manual from "./pages/Manual";
 import ProblemStatementGuide from "./pages/ProblemStatementGuide";
 import Admin from './pages/Admin';
 import Subscription from './pages/Subscription';
+import Terms from './pages/Terms';
+import Privacy from './pages/Privacy';
+import Refund from './pages/Refund';
 import { PaymentTestModeBanner } from '@/components/PaymentTestModeBanner';
 
 const queryClient = new QueryClient();
@@ -48,6 +51,9 @@ const App = () => (
                   <Route path="/canvas/:id" element={<ProtectedRoute><CanvasEditor /></ProtectedRoute>} />
                   <Route path="/manual" element={<ProtectedRoute><Manual /></ProtectedRoute>} />
                   <Route path="/guides/problem-statement-template" element={<ProblemStatementGuide />} />
+                  <Route path="/terms" element={<Terms />} />
+                  <Route path="/privacy" element={<Privacy />} />
+                  <Route path="/refund" element={<Refund />} />
                   <Route path="*" element={<NotFound />} />
                 </Routes>
               </main>
